@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for pages/Hotels/HotelIndexPage.js</title>
+    <title>Code coverage report for pages/Restaurants/RestaurantEditPage.js</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
@@ -19,13 +19,13 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">pages/Hotels</a> HotelIndexPage.js</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">pages/Restaurants</a> RestaurantEditPage.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>10/10</span>
+                <span class='fraction'>8/8</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>3/3</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>9/9</span>
+                <span class='fraction'>8/8</span>
             </div>
         
             
@@ -92,11 +92,8 @@
 <a name='L27'></a><a href='#L27'>27</a>
 <a name='L28'></a><a href='#L28'>28</a>
 <a name='L29'></a><a href='#L29'>29</a>
-<a name='L30'></a><a href='#L30'>30</a>
-<a name='L31'></a><a href='#L31'>31</a>
-<a name='L32'></a><a href='#L32'>32</a>
-<a name='L33'></a><a href='#L33'>33</a>
-<a name='L34'></a><a href='#L34'>34</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L30'></a><a href='#L30'>30</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -106,7 +103,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
@@ -125,51 +121,43 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React from "react";
-import Button from "react-bootstrap/Button";
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">&nbsp;
 import BasicLayout from "main/layouts/BasicLayout/BasicLayout";
-import { useNavigate, Link } from "react-router-dom";
-import { hotelUtils } from "main/utils/hotelUtils";
-import HotelTable from "main/components/Hotels/HotelTable";
+import { useParams } from "react-router-dom";
+import { restaurantUtils }  from 'main/utils/restaurantUtils';
+import RestaurantForm from 'main/components/Restaurants/RestaurantForm';
+import { useNavigate } from 'react-router-dom'
 &nbsp;
-export default function HotelIndexPage() {
-  const navigate = useNavigate();
 &nbsp;
-  const hotelCollection = hotelUtils.get();
-  const hotels = hotelCollection.hotels;
+export default function RestaurantEditPage() {
+    let { id } = useParams();
 &nbsp;
-  const showCell = (cell) =&gt; JSON.stringify(cell.row.values);
+    let navigate = useNavigate(); 
 &nbsp;
-  const deleteCallback = async (cell) =&gt; {
-    console.log(`HotelIndexPage deleteCallback: ${showCell(cell)})`);
-    hotelUtils.del(cell.row.values.id);
-    navigate("/hotels");
-  };
+    const response = restaurantUtils.getById(id);
 &nbsp;
-  return (
-    &lt;BasicLayout&gt;
-      &lt;div className="pt-2"&gt;
-        &lt;Button style={{ float: "right" }} as={Link} to="/hotels/create"&gt;
-          Create Hotel
-        &lt;/Button&gt;
-        &lt;h1&gt;Hotels&lt;/h1&gt;
-        &lt;HotelTable hotels={hotels} deleteCallback={deleteCallback} /&gt;
-      &lt;/div&gt;
-    &lt;/BasicLayout&gt;
-  );
-}
-&nbsp;</pre></td></tr></table></pre>
+    const onSubmit = async (restaurant) =&gt; {
+        const updatedRestaurant = restaurantUtils.update(restaurant);
+        console.log("updatedRestaurant: " + JSON.stringify(updatedRestaurant));
+        navigate("/restaurants");
+    }  
+&nbsp;
+    return (
+        &lt;BasicLayout&gt;
+            &lt;div className="pt-2"&gt;
+                &lt;h1&gt;Edit Restaurant&lt;/h1&gt;
+                &lt;RestaurantForm submitAction={onSubmit} buttonLabel={"Update"} initialContents={response.restaurant}/&gt;
+            &lt;/div&gt;
+        &lt;/BasicLayout&gt;
+    )
+}</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at Mon May 15 2023 18:48:12 GMT-0700 (Pacific Daylight Time)
+                at Tue May 16 2023 17:11:26 GMT-0700 (Pacific Daylight Time)
             </div>
         <script src="../../prettify.js"></script>
         <script>
