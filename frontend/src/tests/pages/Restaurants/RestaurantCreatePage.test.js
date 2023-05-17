@@ -3,6 +3,7 @@ import RestaurantCreatePage from "main/pages/Restaurants/RestaurantCreatePage";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { MemoryRouter } from "react-router-dom";
 import mockConsole from "jest-mock-console";
+import { toBeInTheDocument } from "@testing-library/jest-dom/dist/matchers";
 
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -63,11 +64,12 @@ describe("RestaurantCreatePage tests", () => {
         const createButton = screen.getByText("Create");
         expect(createButton).toBeInTheDocument();
 
-        await act(async () => {
-            fireEvent.change(nameInput, { target: { value: 'South Coast Deli' } })
-            fireEvent.change(descriptionInput, { target: { value: 'Sandwiches and Salads' } })
-            fireEvent.click(createButton);
-        });
+        fireEvent.change(nameInput, { target: { value: 'South Coast Deli' } });
+        fireEvent.change(descriptionInput, { target: { value: 'Sandwiches and Salads' } });
+
+        expect(createButton).toBeInTheDocument();
+
+        fireEvent.click(createButton);
 
         await waitFor(() => expect(mockAdd).toHaveBeenCalled());
         await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith("/restaurants"));
