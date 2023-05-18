@@ -74,7 +74,8 @@ describe("HotelCreatePage tests", () => {
     const createButton = screen.getByText("Create");
     expect(createButton).toBeInTheDocument();
 
-    await act(async () => {
+  
+    
       fireEvent.change(nameInput, { target: { value: "The Ritz-Carlton" } });
       fireEvent.change(descriptionInput, {
         target: {
@@ -86,7 +87,7 @@ describe("HotelCreatePage tests", () => {
         target: { value: "1150 22nd St NW, Washington, DC 20037" },
       });
       fireEvent.click(createButton);
-    });
+    
 
     await waitFor(() => expect(mockAdd).toHaveBeenCalled());
     await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith("/hotels"));

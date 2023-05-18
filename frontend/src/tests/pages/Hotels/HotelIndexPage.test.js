@@ -112,8 +112,7 @@ describe("HotelIndexPage tests", () => {
     expect(mockDelete).toHaveBeenCalledWith(3);
 
     await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith("/hotels"));
-
-    // assert - check that the console.log was called with the expected message
+    //assert - check that the console.log was called with the expected message
     expect(console.log).toHaveBeenCalled();
     const message = console.log.mock.calls[0][0];
     const expectedMessage = `HotelIndexPage deleteCallback: {"id":3,"name":"Beverly Hills","address":"1234 Main St","description":"Great place"}`;
