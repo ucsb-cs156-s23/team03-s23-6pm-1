@@ -102,18 +102,18 @@ describe("HotelEditPage tests", () => {
     const updateButton = screen.getByText("Update");
     expect(updateButton).toBeInTheDocument();
 
-    await act(async () => {
-      fireEvent.change(nameInput, {
-        target: { value: "Village Inn" },
-      });
-      fireEvent.change(descriptionInput, {
-        target: { value: "1234 Main St" },
-      });
-      fireEvent.change(addressInput, {
-        target: { value: "Neat hotel" },
-      });
-      fireEvent.click(updateButton);
+   
+    fireEvent.change(nameInput, {
+      target: { value: "Village Inn" },
     });
+    fireEvent.change(descriptionInput, {
+      target: { value: "1234 Main St" },
+    });
+    fireEvent.change(addressInput, {
+      target: { value: "Neat hotel" },
+    });
+    fireEvent.click(updateButton);
+    
 
     await waitFor(() => expect(mockUpdate).toHaveBeenCalled());
     await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith("/hotels"));
