@@ -1,31 +1,43 @@
 import React from "react";
 import OurTable, { ButtonColumn } from "main/components/OurTable";
 import { useNavigate } from "react-router-dom";
-import { hotelUtils } from "main/utils/hotelUtils";
+import { useBackendMutation } from "main/utils/useBackend";
+import {
+  cellToAxiosParamsDelete,
+  onDeleteSuccess,
+} from "main/utils/hotelUtils";
+import { hasRole } from "main/utils/currentUser";
 
 const showCell = (cell) => JSON.stringify(cell.row.values);
 
-const defaultDeleteCallback = async (cell) => {
-  console.log(`deleteCallback: ${showCell(cell)})`);
-  hotelUtils.del(cell.row.values.id);
-};
-
 export default function HotelTable({
   hotels,
-  deleteCallback = defaultDeleteCallback,
+  currentUser,
   showButtons = true,
   testIdPrefix = "HotelTable",
 }) {
   const navigate = useNavigate();
 
   const editCallback = (cell) => {
-    console.log(`editCallback: ${showCell(cell)})`);
     navigate(`/hotels/edit/${cell.row.values.id}`);
   };
 
   const detailsCallback = (cell) => {
-    console.log(`detailsCallback: ${showCell(cell)})`);
     navigate(`/hotels/details/${cell.row.values.id}`);
+  };
+
+  // Stryker disable all : hard to test for query caching
+
+  const deleteMutation = useBackendMutation(
+    cellToAxiosParamsDelete,
+    { onSuccess: onDeleteSuccess },
+    ["/api/hotels/all"]
+  );
+  // Stryker enable all
+
+  // Stryker disable next-line all : TODO try to make a good test for this
+  const deleteCallback = async (cell) => {
+    deleteMutation.mutate(cell);
   };
 
   const columns = [
@@ -38,26 +50,45 @@ export default function HotelTable({
       accessor: "name",
     },
     {
-      Header: "Address",
-      accessor: "address",
-    },
-    {
       Header: "Description",
       accessor: "description",
     },
+    {
+      Header: "Address",
+      accessor: "address",
+    },
   ];
 
-  const buttonColumns = [
-    ...columns,
+  const ButtonColumns = [
     ButtonColumn("Details", "primary", detailsCallback, testIdPrefix),
-    ButtonColumn("Edit", "primary", editCallback, testIdPrefix),
-    ButtonColumn("Delete", "danger", deleteCallback, testIdPrefix),
   ];
 
-  const columnsToDisplay = showButtons ? buttonColumns : columns;
+  if (hasRole(currentUser, "ROLE_ADMIN")) {
+    ButtonColumns.push(
+      ButtonColumn("Edit", "primary", editCallback, "HotelTable")
+    );
+    ButtonColumns.push(
+      ButtonColumn("Delete", "danger", deleteCallback, "HotelTable")
+    );
+  }
+
+  const columnsToDisplay = showButtons
+    ? [...columns, ...ButtonColumns]
+    : columns;
+
+  // Stryker disable next-line ArrayDeclaration : [columns] is a performance optimization
+  const memoizedColumns = React.useMemo(
+    () => columnsToDisplay,
+    [columnsToDisplay]
+  );
+  const memoizedHotels = React.useMemo(() => hotels, [hotels]);
 
   return (
-    <OurTable data={hotels} columns={columnsToDisplay} testid={testIdPrefix} />
+    <OurTable
+      data={memoizedHotels}
+      columns={memoizedColumns}
+      testid={testIdPrefix}
+    />
   );
 }
 

@@ -1,23 +1,24 @@
 import React from "react";
 import Button from "react-bootstrap/Button";
 import BasicLayout from "main/layouts/BasicLayout/BasicLayout";
-import { useNavigate, Link } from "react-router-dom";
-import { hotelUtils } from "main/utils/hotelUtils";
+import { Link } from "react-router-dom";
 import HotelTable from "main/components/Hotels/HotelTable";
+import { useBackend } from "main/utils/useBackend";
+import { useCurrentUser } from "main/utils/currentUser";
 
 export default function HotelIndexPage() {
-  const navigate = useNavigate();
+  const currentUser = useCurrentUser();
 
-  const hotelCollection = hotelUtils.get();
-  const hotels = hotelCollection.hotels;
-
-  const showCell = (cell) => JSON.stringify(cell.row.values);
-
-  const deleteCallback = async (cell) => {
-    console.log(`HotelIndexPage deleteCallback: ${showCell(cell)})`);
-    hotelUtils.del(cell.row.values.id);
-    navigate("/hotels");
-  };
+  const {
+    data: hotels,
+    error: _error,
+    status: _status,
+  } = useBackend(
+    // Stryker disable next-line all : don't test internal caching of React Query
+    ["/api/hotels/all"],
+    { method: "GET", url: "/api/hotels/all" },
+    []
+  );
 
   return (
     <BasicLayout>
@@ -26,7 +27,7 @@ export default function HotelIndexPage() {
           Create Hotel
         </Button>
         <h1>Hotels</h1>
-        <HotelTable hotels={hotels} deleteCallback={deleteCallback} />
+        <HotelTable hotels={hotels} currentUser={currentUser} />
       </div>
     </BasicLayout>
   );
