@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for components/Hotels/HotelForm.js</title>
+    <title>Code coverage report for components/Restaurants/RestaurantForm.js</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
@@ -19,7 +19,7 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">components/Hotels</a> HotelForm.js</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">components/Restaurants</a> RestaurantForm.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
@@ -164,7 +164,18 @@
 <a name='L99'></a><a href='#L99'>99</a>
 <a name='L100'></a><a href='#L100'>100</a>
 <a name='L101'></a><a href='#L101'>101</a>
-<a name='L102'></a><a href='#L102'>102</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -180,9 +191,17 @@
 <span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -265,108 +284,119 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React from "react";
-import { Button, Form } from "react-bootstrap";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React from 'react'
+import { Button, Form } from 'react-bootstrap';
+import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom';
 &nbsp;
-function HotelForm({ initialContents, submitAction, buttonLabel = "Create" }) {
-  const navigate = useNavigate();
+function RestaurantForm({ initialContents, submitAction, buttonLabel = "Create" }) {
 &nbsp;
-  // Stryker disable all
-  const {
-    register,
-    formState: { errors },
-    handleSubmit,
-  } = useForm({ defaultValues: initialContents || {} });
-  // Stryker enable all
+    const navigate = useNavigate();
+    
+    // Stryker disable all
+    const {
+        register,
+        formState: { errors },
+        handleSubmit,
+    } = useForm(
+        { defaultValues: initialContents || {}, }
+    );
+    // Stryker enable all
+   
+    const testIdPrefix = "RestaurantForm";
 &nbsp;
-  const testIdPrefix = "HotelForm";
+    return (
 &nbsp;
-  return (
-    &lt;Form onSubmit={handleSubmit(submitAction)}&gt;
-      {initialContents &amp;&amp; (
-        &lt;Form.Group className="mb-3"&gt;
-          &lt;Form.Label htmlFor="id"&gt;Id&lt;/Form.Label&gt;
-          &lt;Form.Control
-            data-testid={testIdPrefix + "-id"}
-            id="id"
-            type="text"
-            {...register("id")}
-            value={initialContents.id}
-            disabled
-          /&gt;
-        &lt;/Form.Group&gt;
-      )}
+        &lt;Form onSubmit={handleSubmit(submitAction)}&gt;
 &nbsp;
-      &lt;Form.Group className="mb-3"&gt;
-        &lt;Form.Label htmlFor="name"&gt;Name&lt;/Form.Label&gt;
-        &lt;Form.Control
-          data-testid={testIdPrefix + "-name"}
-          id="name"
-          type="text"
-          isInvalid={Boolean(errors.name)}
-          {...register("name", {
-            required: "Name is required.",
-            maxLength: {
-              value: 30,
-              message: "Max length 30 characters",
-            },
-          })}
-        /&gt;
-        &lt;Form.Control.Feedback type="invalid"&gt;
-          {errors.name?.message}
-        &lt;/Form.Control.Feedback&gt;
-      &lt;/Form.Group&gt;
+            {initialContents &amp;&amp; (
+                &lt;Form.Group className="mb-3" &gt;
+                    &lt;Form.Label htmlFor="id"&gt;Id&lt;/Form.Label&gt;
+                    &lt;Form.Control
+                        data-testid={testIdPrefix + "-id"}
+                        id="id"
+                        type="text"
+                        {...register("id")}
+                        value={initialContents.id}
+                        disabled
+                    /&gt;
+                &lt;/Form.Group&gt;
+            )}
 &nbsp;
-      &lt;Form.Group className="mb-3"&gt;
-        &lt;Form.Label htmlFor="description"&gt;Description&lt;/Form.Label&gt;
-        &lt;Form.Control
-          data-testid={testIdPrefix + "-description"}
-          id="description"
-          type="text"
-          isInvalid={Boolean(errors.description)}
-          {...register("description", {
-            required: "Description is required.",
-          })}
-        /&gt;
-        &lt;Form.Control.Feedback type="invalid"&gt;
-          {errors.description?.message}
-        &lt;/Form.Control.Feedback&gt;
-      &lt;/Form.Group&gt;
+            &lt;Form.Group className="mb-3" &gt;
+                &lt;Form.Label htmlFor="name"&gt;Name&lt;/Form.Label&gt;
+                &lt;Form.Control
+                    data-testid={testIdPrefix + "-name"}
+                    id="name"
+                    type="text"
+                    isInvalid={Boolean(errors.name)}
+                    {...register("name", {
+                        required: "Name is required.",
+                        maxLength : {
+                            value: 30,
+                            message: "Max length 30 characters"
+                        }
+                    })}
+                /&gt;
+                &lt;Form.Control.Feedback type="invalid"&gt;
+                    {errors.name?.message}
+                &lt;/Form.Control.Feedback&gt;
+            &lt;/Form.Group&gt;
 &nbsp;
-      &lt;Form.Group className="mb-3"&gt;
-        &lt;Form.Label htmlFor="address"&gt;Address&lt;/Form.Label&gt;
-        &lt;Form.Control
-          data-testid={testIdPrefix + "-address"}
-          id="address"
-          type="text"
-          isInvalid={Boolean(errors.address)}
-          {...register("address", {
-            required: "Address is required.",
-          })}
-        /&gt;
-        &lt;Form.Control.Feedback type="invalid"&gt;
-          {errors.address?.message}
-        &lt;/Form.Control.Feedback&gt;
-      &lt;/Form.Group&gt;
+            &lt;Form.Group className="mb-3" &gt;
+                &lt;Form.Label htmlFor="description"&gt;Description&lt;/Form.Label&gt;
+                &lt;Form.Control
+                    data-testid={testIdPrefix + "-description"}
+                    id="description"
+                    type="text"
+                    isInvalid={Boolean(errors.description)}
+                    {...register("description", {
+                        required: "Description is required."
+                    })}
+                /&gt;
+                &lt;Form.Control.Feedback type="invalid"&gt;
+                    {errors.description?.message}
+                &lt;/Form.Control.Feedback&gt;
+            &lt;/Form.Group&gt;
 &nbsp;
-      &lt;Button type="submit" data-testid={testIdPrefix + "-submit"}&gt;
-        {buttonLabel}
-      &lt;/Button&gt;
-      &lt;Button
-        variant="Secondary"
-        onClick={() =&gt; navigate(-1)}
-        data-testid={testIdPrefix + "-cancel"}
-      &gt;
-        Cancel
-      &lt;/Button&gt;
-    &lt;/Form&gt;
-  );
+            &lt;Form.Group className="mb-3" &gt;
+                &lt;Form.Label htmlFor="address"&gt;Address&lt;/Form.Label&gt;
+                &lt;Form.Control
+                    data-testid={testIdPrefix + "-address"}
+                    id="address"
+                    type="text"
+                    isInvalid={Boolean(errors.address)}
+                    {...register("address", {
+                        required: "Address is required."
+                    })}
+                /&gt;
+                &lt;Form.Control.Feedback type="invalid"&gt;
+                    {errors.address?.message}
+                &lt;/Form.Control.Feedback&gt;
+            &lt;/Form.Group&gt;
+&nbsp;
+&nbsp;
+            &lt;Button
+                type="submit"
+                data-testid={testIdPrefix + "-submit"}
+            &gt;
+                {buttonLabel}
+            &lt;/Button&gt;
+            &lt;Button
+                variant="Secondary"
+                onClick={() =&gt; navigate(-1)}
+                data-testid={testIdPrefix + "-cancel"}
+            &gt;
+                Cancel
+            &lt;/Button&gt;
+&nbsp;
+        &lt;/Form&gt;
+&nbsp;
+    )
 }
 &nbsp;
-export default HotelForm;
-&nbsp;</pre></td></tr></table></pre>
+export default RestaurantForm;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
