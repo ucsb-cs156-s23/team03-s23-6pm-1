@@ -1,7 +1,7 @@
 name: "33-frontend-pr-mutation-testing: Stryker JS Mutation Testing (JavaScript/Jest)"
 
 # This workflow pulls incremental mutation testing results
-# if they exist for the given PR, and then 
+# if they exist for the given PR, and then
 # uses those incremental results to run mutation testing faster.
 # Reference: https://stryker-mutator.io/docs/stryker-js/incremental/
 
@@ -18,12 +18,12 @@ jobs:
       destination: frontend/reports/mutation
 
     steps:
-      
+
       - uses: szenius/set-timezone@v1.2
         with:
           timezoneLinux: "America/Los_Angeles"
       - uses: actions/checkout@v3.5.2
-        with: 
+        with:
           fetch-depth: 2
 
       - name: Get PR number
@@ -37,14 +37,14 @@ jobs:
             pr_number="main"
           fi
           echo "pr_number=${pr_number}" >> "$GITHUB_ENV"
-          
+
       - name: Setup Node.js
         uses: actions/setup-node@v3.6.0
         with:
           node-version-file: 'frontend/package.json'
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
-  
+
 
       - name: Create directory in case it doesn't exist
         run: |
@@ -61,11 +61,11 @@ jobs:
           path: frontend/history/stryker-incremental-${{ env.pr_number }}.json
           check_artifacts: true
           if_no_artifact_found: warn
-    
+
       - run: npm ci
         working-directory: ./frontend
 
-      - run: npx stryker run --incremental --incrementalFile history/stryker-incremental-${{env.pr_number}}.json
+      - run: npx stryker run --incremental --incrementalFile history/stryker-incremental-${{env.pr_number}}.json --fileLogLevel trace --logLevel debug
         working-directory: ./frontend
 
       - name: Debugging output two
@@ -84,7 +84,7 @@ jobs:
           prefix="prs/${pr_number}/"
           echo "prefix=${prefix}"
           echo "prefix=${prefix}" >> "$GITHUB_ENV"
-      
+
       - name: Set path for github pages deploy when there is NOT a PR num
         if: ${{ env.pr_number == 'main' }}
         run: |
