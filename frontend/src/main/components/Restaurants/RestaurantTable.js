@@ -42,6 +42,10 @@ export default function RestaurantTable({
         {
             Header: 'Description',
             accessor: 'description',
+        },
+        {
+            Header: 'Address',
+            accessor: 'address',
         }
     ];
 

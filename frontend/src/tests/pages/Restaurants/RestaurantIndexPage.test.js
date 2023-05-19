@@ -81,6 +81,9 @@ describe("RestaurantIndexPage tests", () => {
         const description = screen.getByText("Burrito joint, and iconic Isla Vista location");
         expect(description).toBeInTheDocument();
 
+        const address = screen.getByText("879 Embarcadero del Norte");
+        expect(address).toBeInTheDocument();
+
         expect(screen.getByTestId("RestaurantTable-cell-row-0-col-Delete-button")).toBeInTheDocument();
         expect(screen.getByTestId("RestaurantTable-cell-row-0-col-Details-button")).toBeInTheDocument();
         expect(screen.getByTestId("RestaurantTable-cell-row-0-col-Edit-button")).toBeInTheDocument();
@@ -104,6 +107,9 @@ describe("RestaurantIndexPage tests", () => {
         const description = screen.getByText("Burrito joint, and iconic Isla Vista location");
         expect(description).toBeInTheDocument();
 
+        const address = screen.getByText("879 Embarcadero del Norte");
+        expect(address).toBeInTheDocument();
+
         const deleteButton = screen.getByTestId("RestaurantTable-cell-row-0-col-Delete-button");
         expect(deleteButton).toBeInTheDocument();
 
@@ -118,7 +124,7 @@ describe("RestaurantIndexPage tests", () => {
         // assert - check that the console.log was called with the expected message
         expect(console.log).toHaveBeenCalled();
         const message = console.log.mock.calls[0][0];
-        const expectedMessage = `RestaurantIndexPage deleteCallback: {"id":3,"name":"Freebirds","description":"Burrito joint, and iconic Isla Vista location"}`;
+        const expectedMessage = `RestaurantIndexPage deleteCallback: {"id":3,"name":"Freebirds","description":"Burrito joint, and iconic Isla Vista location","address":"879 Embarcadero del Norte"}`;
         expect(message).toMatch(expectedMessage);
         restoreConsole();
 

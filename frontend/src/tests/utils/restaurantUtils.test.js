@@ -212,7 +212,8 @@ describe("restaurantUtils tests", () => {
             const updatedRestaurant = {
                 id: 99,
                 name: "Fake Name",
-                description: "Fake Description"
+                description: "Fake Description",
+                address: "Fake Address"
             }
 
             // act

@@ -25,7 +25,8 @@ jest.mock('main/utils/restaurantUtils', () => {
                     restaurant: {
                         id: 3,
                         name: "Freebirds",
-                        description: "Burritos"
+                        description: "Burritos",
+                        address: "879 Embarcadero del Norte"
                     }
                 }
             }
@@ -71,7 +72,8 @@ describe("RestaurantEditPage tests", () => {
             "restaurant": {
                 id: 3,
                 name: "South Coast Deli (Goleta)",
-                description: "Sandwiches, Salads and more"
+                description: "Sandwiches, Salads and more",
+                address: "10 E. Carrillo St."
             }
         });
 
@@ -90,12 +92,16 @@ describe("RestaurantEditPage tests", () => {
         const descriptionInput = screen.getByLabelText("Description");
         expect(descriptionInput).toBeInTheDocument();
 
+        const addressInput = screen.getByLabelText("Address");
+        expect(addressInput).toBeInTheDocument();
+
         const updateButton = screen.getByText("Update");
         expect(updateButton).toBeInTheDocument();
 
        
         fireEvent.change(nameInput, { target: { value: 'South Coast Deli (Goleta)' } })
         fireEvent.change(descriptionInput, { target: { value: 'Sandwiches, Salads and more' } })
+        fireEvent.change(addressInput, { target: { value: '10 E. Carrillo St.' } })
 
         expect(updateButton).toBeInTheDocument(); 
         fireEvent.click(updateButton);
@@ -107,7 +113,7 @@ describe("RestaurantEditPage tests", () => {
         // assert - check that the console.log was called with the expected message
         expect(console.log).toHaveBeenCalled();
         const message = console.log.mock.calls[0][0];
-        const expectedMessage =  `updatedRestaurant: {"restaurant":{"id":3,"name":"South Coast Deli (Goleta)","description":"Sandwiches, Salads and more"}`
+        const expectedMessage =  `updatedRestaurant: {"restaurant":{"id":3,"name":"South Coast Deli (Goleta)","description":"Sandwiches, Salads and more","address":"10 E. Carrillo St."}}`
 
         expect(message).toMatch(expectedMessage);
         restoreConsole();

@@ -28,7 +28,8 @@ jest.mock('main/utils/restaurantUtils', () => {
                     restaurant: {
                         id: 3,
                         name: "Freebirds",
-                        description: "Burritos"
+                        description: "Burritos",
+                        address: "879 Embarcadero del Norte"
                     }
                 }
             }
