@@ -34,15 +34,14 @@ describe("BookCreatePage tests", () => {
     });
 
     test("redirects to /books on submit", async () => {
-
         const restoreConsole = mockConsole();
 
         mockAdd.mockReturnValue({
             "book": {
-                id: 3,
-                name: "Green Eggs and Ham",
-                author: "Dr Seuss",
-                genre: "Picture Book/Poem"
+                "id": 1,
+        "name": "The Hobbit",
+        "author": "J. R. R. Tolkien",
+        "genre": "High Fantasy" 
             }
         });
 
@@ -67,9 +66,9 @@ describe("BookCreatePage tests", () => {
         expect(createButton).toBeInTheDocument();
 
         await act(async () => {
-            fireEvent.change(nameInput, { target: { value: "Green Eggs and Ham" } })
-            fireEvent.change(authorInput, { target: { value: "Dr Seuss" } })
-            fireEvent.change(genreInput, { target: { value: "Picture Book/Poem"} })
+            fireEvent.change(nameInput, { target: { value: "The Hobbit" } })
+            fireEvent.change(authorInput, { target: { value: "J. R. R. Tolkien" } })
+            fireEvent.change(genreInput, { target: { value: "High Fantasy"} })
             fireEvent.click(createButton);
         });
 
@@ -79,7 +78,7 @@ describe("BookCreatePage tests", () => {
         // assert - check that the console.log was called with the expected message
         expect(console.log).toHaveBeenCalled();
         const message = console.log.mock.calls[0][0];
-        const expectedMessage =  `createdBook: {"book":{"id":3,"name":"Green Eggs and Ham","author":"Dr Seuss","genre":"Picture Book/Poem"}`
+        const expectedMessage =  `createdBook: {"book":{"id":1,"name":"The Hobbit","author":"J. R. R. Tolkien","genre":"High Fantasy"}`
 
         expect(message).toMatch(expectedMessage);
         restoreConsole();
