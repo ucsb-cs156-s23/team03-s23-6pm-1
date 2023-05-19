@@ -11,6 +11,10 @@ import UCSBDatesIndexPage from "main/pages/UCSBDates/UCSBDatesIndexPage";
 import UCSBDatesCreatePage from "main/pages/UCSBDates/UCSBDatesCreatePage";
 import UCSBDatesEditPage from "main/pages/UCSBDates/UCSBDatesEditPage";
 
+import BookCreatePage from "main/pages/Books/BookCreatePage";
+import BookEditPage from "main/pages/Books/BookEditPage";
+import BookIndexPage from "main/pages/Books/BookIndexPage";
+import BookDetailsPage from "main/pages/Books/BookDetailsPage";
 
 import { hasRole, useCurrentUser } from "main/utils/currentUser";
 
@@ -51,6 +55,16 @@ function App() {
             <>
               <Route exact path="/ucsbdates/edit/:id" element={<UCSBDatesEditPage />} />
               <Route exact path="/ucsbdates/create" element={<UCSBDatesCreatePage />} />
+            </>
+          )
+        }
+        {
+          hasRole(currentUser, "ROLE_USER") && (
+            <>
+              <Route exact path="/books/create" element={<BookCreatePage />} />
+              <Route exact path="/books/edit/:id" element={<BookEditPage />} />
+              <Route exact path="/books/details/:id" element={<BookDetailsPage />} />
+              <Route exact path="/books/" element={<BookIndexPage />} />
             </>
           )
         }
