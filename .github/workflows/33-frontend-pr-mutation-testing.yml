@@ -58,14 +58,14 @@ jobs:
           github_token: ${{secrets.GITHUB_TOKEN}}
           branch: main
           name: stryker-incremental-${{env.pr_number}}.json
-          path: frontend/history/stryker-incremental-${{ env.pr_number }}.json
+          path: frontend/history
           check_artifacts: true
           if_no_artifact_found: warn
 
       - run: npm ci
         working-directory: ./frontend
 
-      - run: npx stryker run --incremental --incrementalFile history/stryker-incremental-${{env.pr_number}}.json --fileLogLevel trace --logLevel debug
+      - run: npx stryker run --incremental --incrementalFile history/stryker-incremental-${{env.pr_number}}.json
         working-directory: ./frontend
 
       - name: Debugging output two
