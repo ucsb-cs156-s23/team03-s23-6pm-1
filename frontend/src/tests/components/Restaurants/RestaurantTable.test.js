@@ -196,7 +196,7 @@ describe("RestaurantTable tests", () => {
   const axiosMock = new AxiosMockAdapter(axios);
   test("Delete button calls delete callback", async () => {
     const restoreConsole = mockConsole();
-    axiosMock.onDelete('/api/restaurants', {params: {id: 2}}).reply(200, {data: {}});
+    axiosMock.onDelete('/api/restaurants', {params: {id: 2}}).reply(200, "Restaurant with id 2 was deleted");
     const currentUser = currentUserFixtures.adminUser;
 
     render(
@@ -219,7 +219,7 @@ describe("RestaurantTable tests", () => {
     expect(axiosMock.history.delete[0].url).toBe('/api/restaurants');
 
     expect(console.log).toHaveBeenCalled()
-    expect(mockToast).toHaveBeenCalled()
+    expect(mockToast).toHaveBeenCalledWith("Restaurant with id 2 was deleted")
 
     restoreConsole()
   });
