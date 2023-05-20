@@ -1,51 +1,56 @@
-import { render, screen, waitFor } from "@testing-library/react";
-
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { MemoryRouter } from "react-router-dom";
-import mockConsole from "jest-mock-console";
 import HotelIndexPage from "main/pages/Hotels/HotelIndexPage";
-import axios from "axios"
 import { apiCurrentUserFixtures } from "fixtures/currentUserFixtures";
 import { systemInfoFixtures } from "fixtures/systemInfoFixtures";
-import AxiosMockAdapter from "axios-mock-adapter"
+import { hotelFixtures } from "fixtures/hotelFixtures";
+import axios from "axios";
+import AxiosMockAdapter from "axios-mock-adapter";
+import mockConsole from "jest-mock-console";
 
-const mockNavigate = jest.fn();
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: () => mockNavigate,
-}));
-
-const mockDelete = jest.fn();
-jest.mock("main/utils/hotelUtils", () => {
+const mockToast = jest.fn();
+jest.mock("react-toastify", () => {
+  const originalModule = jest.requireActual("react-toastify");
   return {
     __esModule: true,
-    hotelUtils: {
-      del: (id) => {
-        return mockDelete(id);
-      },
-      get: () => {
-        return {
-          nextId: 5,
-          hotels: [
-            {
-              id: 3,
-              name: "Beverly Hills",
-              address: "1234 Main St",
-              description: "Great place",
-            },
-          ],
-        };
-      },
-    },
+    ...originalModule,
+    toast: (x) => mockToast(x),
   };
 });
 
 describe("HotelIndexPage tests", () => {
-  const axiosMock = new AxiosMockAdapter(axios)
-  axiosMock.onGet("/api/currentUser").reply(200, apiCurrentUserFixtures.userOnly)
-  axiosMock.onGet("/api/systemInfo").reply(200, systemInfoFixtures.showingNeither)
-  const queryClient = new QueryClient();
-  test("renders without crashing", () => {
+  const axiosMock = new AxiosMockAdapter(axios);
+
+  const testId = "HotelTable";
+
+  const setupUserOnly = () => {
+    axiosMock.reset();
+    axiosMock.resetHistory();
+    axiosMock
+      .onGet("/api/currentUser")
+      .reply(200, apiCurrentUserFixtures.userOnly);
+    axiosMock
+      .onGet("/api/systemInfo")
+      .reply(200, systemInfoFixtures.showingNeither);
+  };
+
+  const setupAdminUser = () => {
+    axiosMock.reset();
+    axiosMock.resetHistory();
+    axiosMock
+      .onGet("/api/currentUser")
+      .reply(200, apiCurrentUserFixtures.adminUser);
+    axiosMock
+      .onGet("/api/systemInfo")
+      .reply(200, systemInfoFixtures.showingNeither);
+  };
+
+  test("renders without crashing for regular user", () => {
+    setupUserOnly();
+    const queryClient = new QueryClient();
+    axiosMock.onGet("/api/hotels/all").reply(200, []);
+
     render(
       <QueryClientProvider client={queryClient}>
         <MemoryRouter>
@@ -55,7 +60,11 @@ describe("HotelIndexPage tests", () => {
     );
   });
 
-  test("renders correct fields", () => {
+  test("renders without crashing for admin user", () => {
+    setupAdminUser();
+    const queryClient = new QueryClient();
+    axiosMock.onGet("/api/hotels/all").reply(200, []);
+
     render(
       <QueryClientProvider client={queryClient}>
         <MemoryRouter>
@@ -63,35 +72,57 @@ describe("HotelIndexPage tests", () => {
         </MemoryRouter>
       </QueryClientProvider>
     );
-
-    const createHotelButton = screen.getByText("Create Hotel");
-    expect(createHotelButton).toBeInTheDocument();
-    expect(createHotelButton).toHaveAttribute("style", "float: right;");
-
-    const name = screen.getByText("Beverly Hills");
-    expect(name).toBeInTheDocument();
-
-    const address = screen.getByText("1234 Main St");
-    expect(address).toBeInTheDocument();
-
-    const description = screen.getByText("Great place");
-    expect(description).toBeInTheDocument();
-
-    expect(
-      screen.getByTestId("HotelTable-cell-row-0-col-Delete-button")
-    ).toBeInTheDocument();
-    expect(
-      screen.getByTestId("HotelTable-cell-row-0-col-Details-button")
-    ).toBeInTheDocument();
-    expect(
-      screen.getByTestId("HotelTable-cell-row-0-col-Edit-button")
-    ).toBeInTheDocument();
   });
 
-  test("delete button calls delete and reloads page", async () => {
+  test("renders three hotels without crashing for regular user", async () => {
+    setupUserOnly();
+    const queryClient = new QueryClient();
+    axiosMock.onGet("/api/hotels/all").reply(200, hotelFixtures.threeHotels);
+
+    const { getByTestId } = render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <HotelIndexPage />
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId(`${testId}-cell-row-0-col-id`)).toHaveTextContent("2");
+    });
+    expect(getByTestId(`${testId}-cell-row-1-col-id`)).toHaveTextContent("3");
+    expect(getByTestId(`${testId}-cell-row-2-col-id`)).toHaveTextContent("4");
+  });
+
+  test("renders three hotels without crashing for admin user", async () => {
+    setupAdminUser();
+    const queryClient = new QueryClient();
+    axiosMock.onGet("/api/hotels/all").reply(200, hotelFixtures.threeHotels);
+
+    const { getByTestId } = render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <HotelIndexPage />
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId(`${testId}-cell-row-0-col-id`)).toHaveTextContent("2");
+    });
+    expect(getByTestId(`${testId}-cell-row-1-col-id`)).toHaveTextContent("3");
+    expect(getByTestId(`${testId}-cell-row-2-col-id`)).toHaveTextContent("4");
+  });
+
+  test("renders empty table when backend unavailable, user only", async () => {
+    setupUserOnly();
+
+    const queryClient = new QueryClient();
+    axiosMock.onGet("/api/hotels/all").timeout();
+
     const restoreConsole = mockConsole();
 
-    render(
+    const { queryByTestId } = render(
       <QueryClientProvider client={queryClient}>
         <MemoryRouter>
           <HotelIndexPage />
@@ -99,31 +130,49 @@ describe("HotelIndexPage tests", () => {
       </QueryClientProvider>
     );
 
-    const name = screen.getByText("Beverly Hills");
-    expect(name).toBeInTheDocument();
+    await waitFor(() => {
+      expect(axiosMock.history.get.length).toBeGreaterThanOrEqual(1);
+    });
 
-    const address = screen.getByText("1234 Main St");
-    expect(address).toBeInTheDocument();
-
-    const description = screen.getByText("Great place");
-    expect(description).toBeInTheDocument();
-
-    const deleteButton = screen.getByTestId(
-      "HotelTable-cell-row-0-col-Delete-button"
+    const errorMessage = console.error.mock.calls[0][0];
+    expect(errorMessage).toMatch(
+      "Error communicating with backend via GET on /api/hotels/all"
     );
+    restoreConsole();
+
+    expect(
+      queryByTestId(`${testId}-cell-row-0-col-id`)
+    ).not.toBeInTheDocument();
+  });
+
+  test("what happens when you click delete, admin", async () => {
+    setupAdminUser();
+
+    const queryClient = new QueryClient();
+    axiosMock.onGet("/api/hotels/all").reply(200, hotelFixtures.threeHotels);
+    axiosMock.onDelete("/api/hotels").reply(200, "Hotel with id 2 was deleted");
+
+    const { getByTestId } = render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <HotelIndexPage />
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId(`${testId}-cell-row-0-col-id`)).toBeInTheDocument();
+    });
+
+    expect(getByTestId(`${testId}-cell-row-0-col-id`)).toHaveTextContent("2");
+
+    const deleteButton = getByTestId(`${testId}-cell-row-0-col-Delete-button`);
     expect(deleteButton).toBeInTheDocument();
 
-    deleteButton.click();
+    fireEvent.click(deleteButton);
 
-    expect(mockDelete).toHaveBeenCalledTimes(1);
-    expect(mockDelete).toHaveBeenCalledWith(3);
-
-    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith("/hotels"));
-    //assert - check that the console.log was called with the expected message
-    expect(console.log).toHaveBeenCalled();
-    const message = console.log.mock.calls[0][0];
-    const expectedMessage = `HotelIndexPage deleteCallback: {"id":3,"name":"Beverly Hills","address":"1234 Main St","description":"Great place"}`;
-    expect(message).toMatch(expectedMessage);
-    restoreConsole();
+    await waitFor(() => {
+      expect(mockToast).toBeCalledWith("Hotel with id 2 was deleted");
+    });
   });
 });

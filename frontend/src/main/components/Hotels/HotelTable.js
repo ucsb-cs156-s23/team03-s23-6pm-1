@@ -19,10 +19,12 @@ export default function HotelTable({
   const navigate = useNavigate();
 
   const editCallback = (cell) => {
+    console.log(`editCallback: ${showCell(cell)}`);
     navigate(`/hotels/edit/${cell.row.values.id}`);
   };
 
   const detailsCallback = (cell) => {
+    console.log(`detailsCallback: ${showCell(cell)}`);
     navigate(`/hotels/details/${cell.row.values.id}`);
   };
 
