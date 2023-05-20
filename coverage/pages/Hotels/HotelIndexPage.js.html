@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>10/10</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>3/3</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>9/9</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
@@ -96,7 +96,8 @@
 <a name='L31'></a><a href='#L31'>31</a>
 <a name='L32'></a><a href='#L32'>32</a>
 <a name='L33'></a><a href='#L33'>33</a>
-<a name='L34'></a><a href='#L34'>34</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -104,20 +105,21 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">20x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">20x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">20x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -132,23 +134,24 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React from "react";
 import Button from "react-bootstrap/Button";
 import BasicLayout from "main/layouts/BasicLayout/BasicLayout";
-import { useNavigate, Link } from "react-router-dom";
-import { hotelUtils } from "main/utils/hotelUtils";
+import { Link } from "react-router-dom";
 import HotelTable from "main/components/Hotels/HotelTable";
+import { useBackend } from "main/utils/useBackend";
+import { useCurrentUser } from "main/utils/currentUser";
 &nbsp;
 export default function HotelIndexPage() {
-  const navigate = useNavigate();
+  const currentUser = useCurrentUser();
 &nbsp;
-  const hotelCollection = hotelUtils.get();
-  const hotels = hotelCollection.hotels;
-&nbsp;
-  const showCell = (cell) =&gt; JSON.stringify(cell.row.values);
-&nbsp;
-  const deleteCallback = async (cell) =&gt; {
-    console.log(`HotelIndexPage deleteCallback: ${showCell(cell)})`);
-    hotelUtils.del(cell.row.values.id);
-    navigate("/hotels");
-  };
+  const {
+    data: hotels,
+    error: _error,
+    status: _status,
+  } = useBackend(
+    // Stryker disable next-line all : don't test internal caching of React Query
+    ["/api/hotels/all"],
+    { method: "GET", url: "/api/hotels/all" },
+    []
+  );
 &nbsp;
   return (
     &lt;BasicLayout&gt;
@@ -157,7 +160,7 @@ export default function HotelIndexPage() {
           Create Hotel
         &lt;/Button&gt;
         &lt;h1&gt;Hotels&lt;/h1&gt;
-        &lt;HotelTable hotels={hotels} deleteCallback={deleteCallback} /&gt;
+        &lt;HotelTable hotels={hotels} currentUser={currentUser} /&gt;
       &lt;/div&gt;
     &lt;/BasicLayout&gt;
   );
@@ -169,7 +172,7 @@ export default function HotelIndexPage() {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at Sat May 20 2023 11:11:37 GMT-0700 (Pacific Daylight Time)
+                at Sat May 20 2023 12:26:59 GMT-0700 (Pacific Daylight Time)
             </div>
         <script src="../../prettify.js"></script>
         <script>
