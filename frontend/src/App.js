@@ -11,22 +11,10 @@ import UCSBDatesIndexPage from "main/pages/UCSBDates/UCSBDatesIndexPage";
 import UCSBDatesCreatePage from "main/pages/UCSBDates/UCSBDatesCreatePage";
 import UCSBDatesEditPage from "main/pages/UCSBDates/UCSBDatesEditPage";
 
-
 import BookCreatePage from "main/pages/Books/BookCreatePage";
 import BookEditPage from "main/pages/Books/BookEditPage";
 import BookIndexPage from "main/pages/Books/BookIndexPage";
 import BookDetailsPage from "main/pages/Books/BookDetailsPage";
-
-import HotelCreatePage from "main/pages/Hotels/HotelCreatePage";
-import HotelEditPage from "main/pages/Hotels/HotelEditPage";
-import HotelDetailsPage from "main/pages/Hotels/HotelDetailsPage";
-import HotelIndexPage from "main/pages/Hotels/HotelIndexPage";
-
-import RestaurantCreatePage from "main/pages/Restaurants/RestaurantCreatePage";
-import RestaurantEditPage from "main/pages/Restaurants/RestaurantEditPage";
-import RestaurantIndexPage from "main/pages/Restaurants/RestaurantIndexPage";
-import RestaurantDetailsPage from "main/pages/Restaurants/RestaurantDetailsPage";
-
 
 import { hasRole, useCurrentUser } from "main/utils/currentUser";
 
@@ -80,19 +68,6 @@ function App() {
             </>
           )
         }
-
-              <Route exact path="/hotels/create" element={<HotelCreatePage />} />
-              <Route exact path="/hotels/edit/:id" element={<HotelEditPage />} />
-              <Route exact path="/hotels/details/:id" element={<HotelDetailsPage />} />
-              <Route exact path="/hotels/" element={<HotelIndexPage />} />
-            </>
-          )
-        }
-
-        <Route exact path="/restaurants/create" element={<RestaurantCreatePage />} />
-        <Route exact path="/restaurants/edit/:id" element={<RestaurantEditPage />} />
-        <Route exact path="/restaurants/details/:id" element={<RestaurantDetailsPage />} />
-        <Route exact path="/restaurants/" element={<RestaurantIndexPage />} />
 
       </Routes>
     </BrowserRouter>
