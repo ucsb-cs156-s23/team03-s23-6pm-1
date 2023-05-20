@@ -16,6 +16,11 @@ import HotelEditPage from "main/pages/Hotels/HotelEditPage";
 import HotelDetailsPage from "main/pages/Hotels/HotelDetailsPage";
 import HotelIndexPage from "main/pages/Hotels/HotelIndexPage";
 
+import RestaurantCreatePage from "main/pages/Restaurants/RestaurantCreatePage";
+import RestaurantEditPage from "main/pages/Restaurants/RestaurantEditPage";
+import RestaurantIndexPage from "main/pages/Restaurants/RestaurantIndexPage";
+import RestaurantDetailsPage from "main/pages/Restaurants/RestaurantDetailsPage";
+
 import BookCreatePage from "main/pages/Books/BookCreatePage";
 import BookEditPage from "main/pages/Books/BookEditPage";
 import BookIndexPage from "main/pages/Books/BookIndexPage";
@@ -83,6 +88,11 @@ function App() {
             </>
           )
         }
+
+        <Route exact path="/restaurants/create" element={<RestaurantCreatePage />} />
+        <Route exact path="/restaurants/edit/:id" element={<RestaurantEditPage />} />
+        <Route exact path="/restaurants/details/:id" element={<RestaurantDetailsPage />} />
+        <Route exact path="/restaurants/" element={<RestaurantIndexPage />} />
 
       </Routes>
     </BrowserRouter>
