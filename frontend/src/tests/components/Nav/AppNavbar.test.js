@@ -213,13 +213,11 @@ describe("AppNavbar tests", () => {
 
     });
 
-    
+ test("renders the books menu correctly for a user", async () => {
 
+        const currentUser = currentUserFixtures.userOnly;
 
-
-
-
-    test("renders the books menu correctly for a user", async () => {
+    test("renders the hotels menu correctly for a user", async () => {
 
         const currentUser = currentUserFixtures.userOnly;
         const systemInfo = systemInfoFixtures.showingBoth;
@@ -234,19 +232,20 @@ describe("AppNavbar tests", () => {
             </QueryClientProvider>
         );
 
-
-        await findByTestId("appnavbar-books-dropdown");
-        const dropdown = getByTestId("appnavbar-books-dropdown");
+        
+        await findByTestId("appnavbar-hotels-dropdown");
+        const dropdown = getByTestId("appnavbar-hotels-dropdown");
         const aElement = dropdown.querySelector("a");
         expect(aElement).toBeInTheDocument();
         aElement?.click();
-        await findByTestId("appnavbar-books-list");
-
+        await findByTestId("appnavbar-hotels-list");
+        
     });
 
-    test("renders the books menu correctly for an admin", async () => {
+    test("renders the hotels menu correctly for an admin", async () => {
 
         const currentUser = currentUserFixtures.adminUser;
+
         const systemInfo = systemInfoFixtures.showingBoth;
 
         const doLogin = jest.fn();
@@ -264,7 +263,76 @@ describe("AppNavbar tests", () => {
         const aElement = dropdown.querySelector("a");
         expect(aElement).toBeInTheDocument();
         aElement?.click();
+        await findByTestId("appnavbar-books-list");
+
+    });
+
+    test("renders the books menu correctly for an admin", async () => {
+
+        await findByTestId("appnavbar-hotels-dropdown");
+        const dropdown = getByTestId("appnavbar-hotels-dropdown");
+        const aElement = dropdown.querySelector("a");
+        expect(aElement).toBeInTheDocument();
+        aElement?.click();
+        await findByTestId(/appnavbar-hotels-create/);
+
+    });
+
+    test("renders the restaurant menu correctly for a user", async () => {
+
+        const currentUser = currentUserFixtures.userOnly;
+        const systemInfo = systemInfoFixtures.showingBoth;
+
+        const doLogin = jest.fn();
+
+        const {getByTestId, findByTestId  } = render(
+            <QueryClientProvider client={queryClient}>
+                <MemoryRouter>
+                    <AppNavbar currentUser={currentUser} systemInfo={systemInfo} doLogin={doLogin} />
+                </MemoryRouter>
+            </QueryClientProvider>
+        );
+
+        await findByTestId("appnavbar-restaurants-dropdown");
+        const dropdown = getByTestId("appnavbar-restaurants-dropdown");
+        const aElement = dropdown.querySelector("a");
+        expect(aElement).toBeInTheDocument();
+        aElement?.click();
+        await findByTestId("appnavbar-restaurants-list");
+
+    });
+
+    test("renders the restaurants menu correctly for an admin", async () => {
+
+
+        const currentUser = currentUserFixtures.adminUser;
+        const systemInfo = systemInfoFixtures.showingBoth;
+
+        const doLogin = jest.fn();
+
+        const {getByTestId, findByTestId  } = render(
+            <QueryClientProvider client={queryClient}>
+                <MemoryRouter>
+                    <AppNavbar currentUser={currentUser} systemInfo={systemInfo} doLogin={doLogin} />
+                </MemoryRouter>
+            </QueryClientProvider>
+        );
+
+
+        await findByTestId("appnavbar-books-dropdown");
+        const dropdown = getByTestId("appnavbar-books-dropdown");
+        const aElement = dropdown.querySelector("a");
+        expect(aElement).toBeInTheDocument();
+        aElement?.click();
         await findByTestId(/appnavbar-books-create/);
+
+        await findByTestId("appnavbar-restaurants-dropdown");
+        const dropdown = getByTestId("appnavbar-restaurants-dropdown");
+        const aElement = dropdown.querySelector("a");
+        expect(aElement).toBeInTheDocument();
+        aElement?.click();
+        await findByTestId(/appnavbar-restaurants-create/);
+
 
     });
 });
