@@ -32,7 +32,7 @@ export default function BookEditPage() {
         id: book.id,
       },
       data: {
-        title: book.title,
+        name: book.name,
         author: book.author,
         genre: book.genre
       }
