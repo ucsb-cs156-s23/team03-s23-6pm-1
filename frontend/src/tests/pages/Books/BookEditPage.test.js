@@ -162,8 +162,8 @@ describe("BookEditPage tests", () => {
             expect(axiosMock.history.put.length).toBe(1); // times called
             expect(axiosMock.history.put[0].params).toEqual({ id: 17 });
             expect(axiosMock.history.put[0].data).toBe(JSON.stringify({
-                author: "J. R. R. Tolkien 2",
                 name: "The Hobbit 2",
+                author: "J. R. R. Tolkien 2",
                 genre: "High Fantasy 2"
             })); // posted object
 
