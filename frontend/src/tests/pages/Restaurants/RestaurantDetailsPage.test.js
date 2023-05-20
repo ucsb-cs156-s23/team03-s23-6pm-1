@@ -44,10 +44,8 @@ describe("RestaurantDetailsPage tests", () => {
       </QueryClientProvider>
     );
 
-    await waitFor(() => expect(screen.getByText("Restaurant Details")).toBeInTheDocument());
+    await screen.findByText("Restaurant Details");
 
-
-    expect(screen.getByText("Restaurant Details")).toBeInTheDocument();
     const expectedHeaders = ["id", "name", "address", "description"];
     expectedHeaders.forEach((header) => {
       expect(screen.getByTestId(`RestaurantTable-header-${header}`)).toBeInTheDocument();
@@ -75,9 +73,6 @@ describe("RestaurantDetailsPage tests", () => {
           </MemoryRouter>
         </QueryClientProvider>
       );
-
-      await waitFor(() => {
-      });
     });
 
     test("loads the correct fields, and has no buttons", async () => {

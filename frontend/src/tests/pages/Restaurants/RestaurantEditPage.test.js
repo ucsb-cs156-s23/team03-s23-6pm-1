@@ -92,16 +92,15 @@ describe("RestaurantEditPage tests", () => {
       );
 
       await waitFor(() => {
+        const idField = screen.getByTestId("RestaurantForm-id");
+        expect(idField).toHaveValue("3");
       });
 
-      const idField = screen.getByTestId("RestaurantForm-id");
       const nameInput = screen.getByLabelText("Name");
       const descriptionInput = screen.getByLabelText("Description");
       const addressInput = screen.getByLabelText("Address");
       const updateButton = screen.getByText("Update");
 
-
-      expect(idField).toHaveValue("3");
       expect(nameInput).toHaveValue("Freebirds");
       expect(descriptionInput).toHaveValue("Burritos");
       expect(addressInput).toHaveValue("1234 State St");
@@ -124,16 +123,16 @@ describe("RestaurantEditPage tests", () => {
         </QueryClientProvider>
       );
 
-      await waitFor(() => {
+      await waitFor(async () => {
+        const idField = await screen.findByTestId("RestaurantForm-id");
+        expect(idField).toHaveValue("3");
       });
 
-      const idField = await screen.findByTestId("RestaurantForm-id");
       const nameInput = screen.getByLabelText("Name");
       const descriptionInput = screen.getByLabelText("Description");
       const addressInput = screen.getByLabelText("Address");
       const updateButton = screen.getByText("Update");
 
-      expect(idField).toHaveValue("3");
       expect(nameInput).toHaveValue("Freebirds");
       expect(descriptionInput).toHaveValue("Burritos");
       expect(addressInput).toHaveValue("1234 State St");

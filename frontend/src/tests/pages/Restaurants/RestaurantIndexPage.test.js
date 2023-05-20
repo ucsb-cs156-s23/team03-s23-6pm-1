@@ -70,12 +70,8 @@ describe("RestaurantIndexPage tests", () => {
     );
   });
 
-  test.each([
-    ["regular user", setupUserOnly],
-    ["admin user", setupAdminUser]
-  ])
-  ("renders three restaurants correctly for %s", async (user, setup) => {
-    setup();
+  test("renders three restaurants correctly for regular user", async () => {
+    setupUserOnly();
     axiosMock.onGet("/api/restaurants/all").reply(200, restaurantFixtures.threeRestaurants);
 
     render(
@@ -85,8 +81,6 @@ describe("RestaurantIndexPage tests", () => {
         </MemoryRouter>
       </QueryClientProvider>
     );
-
-
 
     const createRestaurantButton = screen.getByText("Create Restaurant");
     expect(createRestaurantButton).toBeInTheDocument();
@@ -104,13 +98,40 @@ describe("RestaurantIndexPage tests", () => {
     expect(address).toBeInTheDocument();
 
     expect(screen.getByTestId("RestaurantTable-cell-row-0-col-Details-button")).toBeInTheDocument();
-    if (user === "regular user") {
-      expect(screen.queryByTestId("RestaurantTable-cell-row-0-col-Delete-button")).not.toBeInTheDocument();
-      expect(screen.queryByTestId("RestaurantTable-cell-row-0-col-Edit-button")).not.toBeInTheDocument();
-    } else {
-      expect(screen.getByTestId("RestaurantTable-cell-row-0-col-Delete-button")).toBeInTheDocument();
-      expect(screen.getByTestId("RestaurantTable-cell-row-0-col-Edit-button")).toBeInTheDocument();
-    }
+    expect(screen.queryByTestId("RestaurantTable-cell-row-0-col-Delete-button")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("RestaurantTable-cell-row-0-col-Edit-button")).not.toBeInTheDocument();
+  });
+
+  test("renders three restaurants correctly for admin user", async () => {
+    setupAdminUser();
+    axiosMock.onGet("/api/restaurants/all").reply(200, restaurantFixtures.threeRestaurants);
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <RestaurantIndexPage/>
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+
+    const createRestaurantButton = screen.getByText("Create Restaurant");
+    expect(createRestaurantButton).toBeInTheDocument();
+    expect(createRestaurantButton).toHaveAttribute("style", "float: right;");
+
+    await waitFor(() => {
+      const name = screen.getByText("Freebirds");
+      expect(name).toBeInTheDocument();
+    });
+
+    const description = screen.getByText("Burrito joint, and iconic Isla Vista location");
+    expect(description).toBeInTheDocument();
+
+    const address = screen.getByText("879 Embarcadero del Norte");
+    expect(address).toBeInTheDocument();
+
+    expect(screen.getByTestId("RestaurantTable-cell-row-0-col-Details-button")).toBeInTheDocument();
+    expect(screen.getByTestId("RestaurantTable-cell-row-0-col-Delete-button")).toBeInTheDocument();
+    expect(screen.getByTestId("RestaurantTable-cell-row-0-col-Edit-button")).toBeInTheDocument();
   });
 
   // delete is tested in RestaurantTable.test.js

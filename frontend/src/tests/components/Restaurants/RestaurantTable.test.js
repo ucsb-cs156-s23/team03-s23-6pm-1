@@ -63,13 +63,8 @@ describe("RestaurantTable tests", () => {
   });
 
 
-  test.each([
-    "adminUser",
-    "userOnly",
-  ])
-
-  ("Has the expected column headers, content, and buttons for %s", (user) => {
-    const currentUser = currentUserFixtures[user];
+  test("Has the expected column headers, content, and buttons for normal user", () => {
+    const currentUser = currentUserFixtures.userOnly;
 
     render(
       <QueryClientProvider client={queryClient}>
@@ -99,20 +94,49 @@ describe("RestaurantTable tests", () => {
     expect(detailsButton).toBeInTheDocument();
     expect(detailsButton).toHaveClass("btn-primary");
 
-    if (user === "adminUser") {
+    expect(screen.queryByText("Delete")).not.toBeInTheDocument();
+    expect(screen.queryByText("Edit")).not.toBeInTheDocument();
+  });
 
+  test
+  ("Has the expected column headers, content, and buttons for admin user", () => {
+    const currentUser = currentUserFixtures.adminUser;
 
-      const editButton = screen.getByTestId(`${testId}-cell-row-0-col-Edit-button`);
-      expect(editButton).toBeInTheDocument();
-      expect(editButton).toHaveClass("btn-primary");
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <RestaurantTable restaurants={restaurantFixtures.threeRestaurants} currentUser={currentUser}/>
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
 
-      const deleteButton = screen.getByTestId(`${testId}-cell-row-0-col-Delete-button`);
-      expect(deleteButton).toBeInTheDocument();
-      expect(deleteButton).toHaveClass("btn-danger");
-    } else {
-      expect(screen.queryByText("Delete")).not.toBeInTheDocument();
-      expect(screen.queryByText("Edit")).not.toBeInTheDocument();
-    }
+    expectedHeaders.forEach((headerText) => {
+      const header = screen.getByText(headerText);
+      expect(header).toBeInTheDocument();
+    });
+
+    expectedFields.forEach((field) => {
+      const header = screen.getByTestId(`${testId}-cell-row-0-col-${field}`);
+      expect(header).toBeInTheDocument();
+    });
+
+    expect(screen.getByTestId(`${testId}-cell-row-0-col-id`)).toHaveTextContent("2");
+    expect(screen.getByTestId(`${testId}-cell-row-0-col-name`)).toHaveTextContent("Cristino's Bakery");
+
+    expect(screen.getByTestId(`${testId}-cell-row-1-col-id`)).toHaveTextContent("3");
+    expect(screen.getByTestId(`${testId}-cell-row-1-col-name`)).toHaveTextContent("Freebirds");
+
+    const detailsButton = screen.getByTestId(`${testId}-cell-row-0-col-Details-button`);
+    expect(detailsButton).toBeInTheDocument();
+    expect(detailsButton).toHaveClass("btn-primary");
+
+    const editButton = screen.getByTestId(`${testId}-cell-row-0-col-Edit-button`);
+    expect(editButton).toBeInTheDocument();
+    expect(editButton).toHaveClass("btn-primary");
+
+    const deleteButton = screen.getByTestId(`${testId}-cell-row-0-col-Delete-button`);
+    expect(deleteButton).toBeInTheDocument();
+    expect(deleteButton).toHaveClass("btn-danger");
   });
 
 
@@ -218,9 +242,9 @@ describe("RestaurantTable tests", () => {
     await waitFor(() => expect(axiosMock.history.delete.length).toBe(1));
     expect(axiosMock.history.delete[0].url).toBe('/api/restaurants');
 
-    expect(console.log).toHaveBeenCalled()
-    expect(mockToast).toHaveBeenCalledWith("Restaurant with id 2 was deleted")
+    expect(console.log).toHaveBeenCalled();
+    expect(mockToast).toHaveBeenCalledWith("Restaurant with id 2 was deleted");
 
-    restoreConsole()
+    restoreConsole();
   });
 });
