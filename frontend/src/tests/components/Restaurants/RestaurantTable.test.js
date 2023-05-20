@@ -1,8 +1,11 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "react-query";
-import RestaurantTable, { showCell } from "main/components/Restaurants/RestaurantTable";
-import { restaurantFixtures } from "fixtures/restaurantFixtures";
+import {fireEvent, render, screen, waitFor} from "@testing-library/react";
+import {MemoryRouter} from "react-router-dom";
+import {QueryClient, QueryClientProvider} from "react-query";
+import RestaurantTable from "main/components/Restaurants/RestaurantTable";
+import {restaurantFixtures} from "fixtures/restaurantFixtures";
+import {currentUserFixtures} from "../../../fixtures/currentUserFixtures";
+import AxiosMockAdapter from "axios-mock-adapter";
+import axios from "axios";
 import mockConsole from "jest-mock-console";
 
 const mockedNavigate = jest.fn();
@@ -12,6 +15,16 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => mockedNavigate
 }));
 
+const mockToast = jest.fn();
+jest.mock('react-toastify', () => {
+  const originalModule = jest.requireActual('react-toastify');
+  return {
+    __esModule: true,
+    ...originalModule,
+    toast: (x) => mockToast(x)
+  };
+});
+
 describe("RestaurantTable tests", () => {
   const queryClient = new QueryClient();
 
@@ -19,33 +32,49 @@ describe("RestaurantTable tests", () => {
   const expectedFields = ["id", "name", "description", "address"];
   const testId = "RestaurantTable";
 
-  test("showCell function works properly", () => {
-    const cell = {
-      row: {
-        values: { a: 1, b: 2, c: 3 }
-      },
-    };
-    expect(showCell(cell)).toBe(`{"a":1,"b":2,"c":3}`);
-  });
-
-  test("renders without crashing for empty table", () => {
+  test("renders without crashing for empty table with user not logged in", () => {
     render(
       <QueryClientProvider client={queryClient}>
         <MemoryRouter>
-          <RestaurantTable restaurants={[]} />
+          <RestaurantTable restaurants={[]} currentUser={null}/>
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+  });
+
+  test("renders without crashing for empty table for ordinary user", () => {
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <RestaurantTable restaurants={[]} currentUser={currentUserFixtures.userOnly}/>
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+  });
+
+  test("renders without crashing for empty table for admin", () => {
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <RestaurantTable restaurants={[]} currentUser={currentUserFixtures.adminUser}/>
         </MemoryRouter>
       </QueryClientProvider>
     );
   });
 
 
+  test.each([
+    "adminUser",
+    "userOnly",
+  ])
 
-  test("Has the expected column headers, content and buttons", () => {
+  ("Has the expected column headers, content, and buttons for %s", (user) => {
+    const currentUser = currentUserFixtures[user];
 
     render(
       <QueryClientProvider client={queryClient}>
         <MemoryRouter>
-          <RestaurantTable restaurants={restaurantFixtures.threeRestaurants} />
+          <RestaurantTable restaurants={restaurantFixtures.threeRestaurants} currentUser={currentUser}/>
         </MemoryRouter>
       </QueryClientProvider>
     );
@@ -70,22 +99,32 @@ describe("RestaurantTable tests", () => {
     expect(detailsButton).toBeInTheDocument();
     expect(detailsButton).toHaveClass("btn-primary");
 
-    const editButton = screen.getByTestId(`${testId}-cell-row-0-col-Edit-button`);
-    expect(editButton).toBeInTheDocument();
-    expect(editButton).toHaveClass("btn-primary");
+    if (user === "adminUser") {
 
-    const deleteButton = screen.getByTestId(`${testId}-cell-row-0-col-Delete-button`);
-    expect(deleteButton).toBeInTheDocument();
-    expect(deleteButton).toHaveClass("btn-danger");
 
+      const editButton = screen.getByTestId(`${testId}-cell-row-0-col-Edit-button`);
+      expect(editButton).toBeInTheDocument();
+      expect(editButton).toHaveClass("btn-primary");
+
+      const deleteButton = screen.getByTestId(`${testId}-cell-row-0-col-Delete-button`);
+      expect(deleteButton).toBeInTheDocument();
+      expect(deleteButton).toHaveClass("btn-danger");
+    } else {
+      expect(screen.queryByText("Delete")).not.toBeInTheDocument();
+      expect(screen.queryByText("Edit")).not.toBeInTheDocument();
+    }
   });
 
+
   test("Has the expected column headers, content and no buttons when showButtons=false", () => {
+    const currentUser = currentUserFixtures.adminUser;
 
     render(
       <QueryClientProvider client={queryClient}>
         <MemoryRouter>
-          <RestaurantTable restaurants={restaurantFixtures.threeRestaurants} showButtons={false} />
+          <RestaurantTable restaurants={restaurantFixtures.threeRestaurants}
+                           showButtons={false}
+                           currentUser={currentUser}/>
         </MemoryRouter>
       </QueryClientProvider>
     );
@@ -112,102 +151,76 @@ describe("RestaurantTable tests", () => {
   });
 
 
-  test("Edit button navigates to the edit page", async () => {
-    // arrange
-    const restoreConsole = mockConsole();
+  test("Edit button navigates to the edit page for admin user", async () => {
+    const currentUser = currentUserFixtures.adminUser;
 
-    // act - render the component
     render(
       <QueryClientProvider client={queryClient}>
         <MemoryRouter>
-          <RestaurantTable restaurants={restaurantFixtures.threeRestaurants} />
+          <RestaurantTable restaurants={restaurantFixtures.threeRestaurants} currentUser={currentUser}/>
         </MemoryRouter>
       </QueryClientProvider>
     );
 
-    // assert - check that the expected content is rendered
     expect(await screen.findByTestId(`${testId}-cell-row-0-col-id`)).toHaveTextContent("2");
     expect(screen.getByTestId(`${testId}-cell-row-0-col-name`)).toHaveTextContent("Cristino's Bakery");
 
     const editButton = screen.getByTestId(`${testId}-cell-row-0-col-Edit-button`);
     expect(editButton).toBeInTheDocument();
 
-    // act - click the edit button
     fireEvent.click(editButton);
 
-    // assert - check that the navigate function was called with the expected path
     await waitFor(() => expect(mockedNavigate).toHaveBeenCalledWith('/restaurants/edit/2'));
-
-    // assert - check that the console.log was called with the expected message
-    expect(console.log).toHaveBeenCalled();
-    const message = console.log.mock.calls[0][0];
-    const expectedMessage = `editCallback: {"id":2,"name":"Cristino's Bakery","description":"This place is takeout only.  It may look mostly like a bakery with Mexican pastries, but it also has amazing burritos and tacos","address":"170 Aero Camino"})`;
-    expect(message).toMatch(expectedMessage);
-    restoreConsole();
   });
 
   test("Details button navigates to the details page", async () => {
-    // arrange
-    const restoreConsole = mockConsole();
-
-    // act - render the component
     render(
       <QueryClientProvider client={queryClient}>
         <MemoryRouter>
-          <RestaurantTable restaurants={restaurantFixtures.threeRestaurants} />
+          <RestaurantTable restaurants={restaurantFixtures.threeRestaurants}/>
         </MemoryRouter>
       </QueryClientProvider>
     );
 
-    // assert - check that the expected content is rendered
     expect(await screen.findByTestId(`${testId}-cell-row-0-col-id`)).toHaveTextContent("2");
     expect(screen.getByTestId(`${testId}-cell-row-0-col-name`)).toHaveTextContent("Cristino's Bakery");
 
     const detailsButton = screen.getByTestId(`${testId}-cell-row-0-col-Details-button`);
     expect(detailsButton).toBeInTheDocument();
 
-    // act - click the details button
     fireEvent.click(detailsButton);
 
-    // assert - check that the navigate function was called with the expected path
     await waitFor(() => expect(mockedNavigate).toHaveBeenCalledWith('/restaurants/details/2'));
-
-    // assert - check that the console.log was called with the expected message
-    expect(console.log).toHaveBeenCalled();
-    const message = console.log.mock.calls[0][0];
-    const expectedMessage = `detailsCallback: {"id":2,"name":"Cristino's Bakery","description":"This place is takeout only.  It may look mostly like a bakery with Mexican pastries, but it also has amazing burritos and tacos","address":"170 Aero Camino"})`;
-    expect(message).toMatch(expectedMessage);
-    restoreConsole();
   });
 
+  const axiosMock = new AxiosMockAdapter(axios);
   test("Delete button calls delete callback", async () => {
-    // arrange
     const restoreConsole = mockConsole();
+    axiosMock.onDelete('/api/restaurants', {params: {id: 2}}).reply(200, {data: {}});
+    const currentUser = currentUserFixtures.adminUser;
 
-    // act - render the component
     render(
       <QueryClientProvider client={queryClient}>
         <MemoryRouter>
-          <RestaurantTable restaurants={restaurantFixtures.threeRestaurants} />
+          <RestaurantTable restaurants={restaurantFixtures.threeRestaurants} currentUser={currentUser}/>
         </MemoryRouter>
       </QueryClientProvider>
     );
 
-    // assert - check that the expected content is rendered
     expect(await screen.findByTestId(`${testId}-cell-row-0-col-id`)).toHaveTextContent("2");
     expect(screen.getByTestId(`${testId}-cell-row-0-col-name`)).toHaveTextContent("Cristino's Bakery");
 
     const deleteButton = screen.getByTestId(`${testId}-cell-row-0-col-Delete-button`);
     expect(deleteButton).toBeInTheDocument();
 
-     // act - click the delete button
     fireEvent.click(deleteButton);
 
-     // assert - check that the console.log was called with the expected message
-     await(waitFor(() => expect(console.log).toHaveBeenCalled()));
-     const message = console.log.mock.calls[0][0];
-     const expectedMessage = `deleteCallback: {"id":2,"name":"Cristino's Bakery","description":"This place is takeout only.  It may look mostly like a bakery with Mexican pastries, but it also has amazing burritos and tacos","address":"170 Aero Camino"})`;
-     expect(message).toMatch(expectedMessage);
-     restoreConsole();
+    await waitFor(() => expect(axiosMock.history.delete.length).toBe(1));
+    expect(axiosMock.history.delete[0].url).toBe('/api/restaurants');
+
+    expect(console.log).toHaveBeenCalled()
+    expect(mockToast).toHaveBeenCalled()
+
+    restoreConsole()
   });
 });
