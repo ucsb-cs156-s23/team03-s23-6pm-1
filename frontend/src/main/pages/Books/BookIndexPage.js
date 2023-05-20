@@ -20,9 +20,6 @@ export default function BookIndexPage() {
   return (
     <BasicLayout>
       <div className="pt-2">
-        <Button style={{ float: "right" }} as={Link} to="/books/create">
-          Create Book
-        </Button>
         <h1>Books</h1>
         <BookTable books={books} currentUser={currentUser} />
       </div>
