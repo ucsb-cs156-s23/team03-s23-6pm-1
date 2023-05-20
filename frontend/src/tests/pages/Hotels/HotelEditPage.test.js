@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, render, waitFor, screen } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { MemoryRouter } from "react-router-dom";
 import mockConsole from "jest-mock-console";
@@ -20,6 +20,28 @@ jest.mock("react-toastify", () => {
 
 const mockNavigate = jest.fn();
 
+const mockUpdate = jest.fn();
+jest.mock("main/utils/hotelUtils", () => {
+  return {
+    __esModule: true,
+    hotelUtils: {
+      update: (_hotel) => {
+        return mockUpdate();
+      },
+      getById: (_id) => {
+        return {
+          hotel: {
+            id: 3,
+            name: "Grandest Hotel",
+            description: "Fantastic",
+            address: "123 State",
+          },
+        };
+      },
+    },
+  };
+});
+
 jest.mock("react-router-dom", () => {
   const originalModule = jest.requireActual("react-router-dom");
   return {
@@ -36,6 +58,8 @@ jest.mock("react-router-dom", () => {
 });
 
 describe("HotelEditPage tests", () => {
+  const queryClient = new QueryClient();
+
   describe("when the backend doesn't return", () => {
     const axiosMock = new AxiosMockAdapter(axios);
 
@@ -120,8 +144,6 @@ describe("HotelEditPage tests", () => {
       const descriptionField = getByTestId("HotelForm-description");
       const addressField = getByTestId("HotelForm-address");
 
-      const submitButton = getByTestId("HotelForm-submit");
-
       expect(idField).toHaveValue("3");
       expect(nameField).toHaveValue("Grand Hotel");
       expect(descriptionField).toHaveValue("Fantastic");
@@ -154,6 +176,7 @@ describe("HotelEditPage tests", () => {
       expect(addressField).toHaveValue("123 State");
 
       expect(submitButton).toBeInTheDocument();
+      expect(submitButton).toHaveTextContent("Update");
 
       fireEvent.change(nameField, { target: { value: "Best Hotel" } });
       fireEvent.change(descriptionField, {

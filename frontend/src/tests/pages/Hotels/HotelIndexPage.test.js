@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, render, waitFor, screen } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { MemoryRouter } from "react-router-dom";
 import HotelIndexPage from "main/pages/Hotels/HotelIndexPage";
@@ -58,6 +58,10 @@ describe("HotelIndexPage tests", () => {
         </MemoryRouter>
       </QueryClientProvider>
     );
+
+    const createHotelButton = screen.getByText("Create Hotel");
+    expect(createHotelButton).toBeInTheDocument();
+    expect(createHotelButton).toHaveAttribute("style", "float: right;");
   });
 
   test("renders without crashing for admin user", () => {
@@ -72,6 +76,10 @@ describe("HotelIndexPage tests", () => {
         </MemoryRouter>
       </QueryClientProvider>
     );
+
+    const createHotelButton = screen.getByText("Create Hotel");
+    expect(createHotelButton).toBeInTheDocument();
+    expect(createHotelButton).toHaveAttribute("style", "float: right;");
   });
 
   test("renders three hotels without crashing for regular user", async () => {
@@ -112,6 +120,10 @@ describe("HotelIndexPage tests", () => {
     });
     expect(getByTestId(`${testId}-cell-row-1-col-id`)).toHaveTextContent("3");
     expect(getByTestId(`${testId}-cell-row-2-col-id`)).toHaveTextContent("4");
+
+    const createHotelButton = screen.getByText("Create Hotel");
+    expect(createHotelButton).toBeInTheDocument();
+    expect(createHotelButton).toHaveAttribute("style", "float: right;");
   });
 
   test("renders empty table when backend unavailable, user only", async () => {
@@ -143,6 +155,10 @@ describe("HotelIndexPage tests", () => {
     expect(
       queryByTestId(`${testId}-cell-row-0-col-id`)
     ).not.toBeInTheDocument();
+
+    const createHotelButton = screen.getByText("Create Hotel");
+    expect(createHotelButton).toBeInTheDocument();
+    expect(createHotelButton).toHaveAttribute("style", "float: right;");
   });
 
   test("what happens when you click delete, admin", async () => {

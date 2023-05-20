@@ -242,6 +242,8 @@ describe("HotelTable tests", () => {
   });
 
   test("Edit button navigates to the edit page for admin", async () => {
+    const restoreConsole = mockConsole();
+
     const currentUser = currentUserFixtures.adminUser;
 
     // act - render the component
@@ -276,9 +278,18 @@ describe("HotelTable tests", () => {
     await waitFor(() =>
       expect(mockedNavigate).toHaveBeenCalledWith("/hotels/edit/2")
     );
+
+    // assert - check that the console.log was called with the expected message
+    expect(console.log).toHaveBeenCalled();
+    const message = console.log.mock.calls[0][0];
+    const expectedMessage = `editCallback: {"id":2,"name":"The Beverly Hills Hotel","description":"A legendary hotel known for its iconic pink façade and Hollywood glamour, this luxury hotel offers spacious rooms, a full-service spa, and a stunning outdoor pool.","address":"9641 Sunset Blvd, Beverly Hills, CA 90210"}`;
+    expect(message).toBe(expectedMessage);
+    restoreConsole();
   });
 
   test("Details button navigates to the details page", async () => {
+    const restoreConsole = mockConsole();
+
     // act - render the component
     render(
       <QueryClientProvider client={queryClient}>
@@ -308,5 +319,12 @@ describe("HotelTable tests", () => {
     await waitFor(() =>
       expect(mockedNavigate).toHaveBeenCalledWith("/hotels/details/2")
     );
+
+    // assert - check that the console.log was called with the expected message
+    expect(console.log).toHaveBeenCalled();
+    const message = console.log.mock.calls[0][0];
+    const expectedMessage = `detailsCallback: {"id":2,"name":"The Beverly Hills Hotel","description":"A legendary hotel known for its iconic pink façade and Hollywood glamour, this luxury hotel offers spacious rooms, a full-service spa, and a stunning outdoor pool.","address":"9641 Sunset Blvd, Beverly Hills, CA 90210"}`;
+    expect(message).toBe(expectedMessage);
+    restoreConsole();
   });
 });

@@ -24,13 +24,11 @@ export default function HotelDetailsPage() {
     }
   );
 
-  const hotels = hotel ? [hotel] : [];
-
   return (
     <BasicLayout>
       <div className="pt-2">
         <h1>Hotel Details</h1>
-        <HotelTable hotels={hotels} showButtons={false} />
+        {hotel && <HotelTable hotels={[hotel]} showButtons={false} />}
       </div>
     </BasicLayout>
   );

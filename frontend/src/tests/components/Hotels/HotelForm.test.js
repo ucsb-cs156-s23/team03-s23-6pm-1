@@ -26,6 +26,8 @@ describe("HotelForm tests", () => {
       </QueryClientProvider>
     );
 
+    expect(await screen.findByText(/Create/)).toBeInTheDocument();
+
     expectedHeaders.forEach((headerText) => {
       const header = screen.getByText(headerText);
       expect(header).toBeInTheDocument();
