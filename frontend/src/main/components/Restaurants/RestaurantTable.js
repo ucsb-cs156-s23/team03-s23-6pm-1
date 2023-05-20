@@ -1,9 +1,9 @@
 import React from "react";
 import OurTable, {ButtonColumn} from "main/components/OurTable";
 import {useNavigate} from "react-router-dom";
-import {cellToAxiosParamsDelete, onDeleteSuccess} from "main/utils/restaurantUtils";
 import {useBackendMutation} from "../../utils/useBackend";
 import {hasRole} from "../../utils/currentUser";
+import {toast} from "react-toastify";
 
 export default function RestaurantTable({
   restaurants,
@@ -12,9 +12,24 @@ export default function RestaurantTable({
   currentUser = null
 }) {
 
+  const onDeleteSuccess = message => {
+    console.log(message);
+    toast(message);
+  };
+
+  const objectToAxiosParams = function (cell) {
+    return {
+      url: "/api/restaurants",
+      method: "DELETE",
+      params: {
+        id: cell.row.values.id
+      }
+    };
+  };
+
   // Stryker disable all : hard to test for query caching
   const deleteMutation = useBackendMutation(
-    cellToAxiosParamsDelete,
+    objectToAxiosParams,
     {onSuccess: onDeleteSuccess},
     ["/api/restaurants/all"]
   );

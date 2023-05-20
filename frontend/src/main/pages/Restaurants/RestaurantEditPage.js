@@ -1,6 +1,5 @@
 import BasicLayout from "main/layouts/BasicLayout/BasicLayout";
 import {Navigate, useParams} from "react-router-dom";
-import {restaurantUtils} from 'main/utils/restaurantUtils';
 import RestaurantForm from 'main/components/Restaurants/RestaurantForm';
 import {toast} from "react-toastify";
 import {useBackend, useBackendMutation} from "../../utils/useBackend";
