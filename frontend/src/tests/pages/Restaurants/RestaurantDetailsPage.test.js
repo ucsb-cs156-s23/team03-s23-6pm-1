@@ -35,6 +35,7 @@ describe("RestaurantDetailsPage tests", () => {
 
   test("renders headers only when backend doesn't return a restaurant", async () => {
     axiosMock.onGet("/api/restaurants", {params: {id: 3}}).timeout();
+
     render(
       <QueryClientProvider client={queryClient}>
         <MemoryRouter>
@@ -52,6 +53,8 @@ describe("RestaurantDetailsPage tests", () => {
       expect(screen.getByTestId(`RestaurantTable-header-${header}`)).toBeInTheDocument();
     });
 
+    // this kills a mutant
+    expect(screen.queryByTestId("RestaurantTable-cell-row-0-col-id")).not.toBeInTheDocument();
   });
 
   describe("when backend returns a restaurant", () => {
