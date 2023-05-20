@@ -2,7 +2,7 @@ import React from 'react';
 import Button from 'react-bootstrap/Button';
 import BasicLayout from "main/layouts/BasicLayout/BasicLayout";
 import RestaurantTable from 'main/components/Restaurants/RestaurantTable';
-import {Link, useNavigate} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import {useBackend} from "../../utils/useBackend";
 import {useCurrentUser} from "../../utils/currentUser";
 
