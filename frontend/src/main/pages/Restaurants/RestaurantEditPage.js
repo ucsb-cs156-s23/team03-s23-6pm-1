@@ -8,7 +8,7 @@ import {useBackend, useBackendMutation} from "../../utils/useBackend";
 export default function RestaurantEditPage() {
   let {id} = useParams();
 
-  const {data: restaurant, error, status} =
+  const {data: restaurant} =
     useBackend(
       // Stryker disable next-line all : don't test internal caching of React Query
       [`/api/restaurants?id=${id}`],
@@ -48,7 +48,7 @@ export default function RestaurantEditPage() {
   };
 
   if (mutation.isSuccess) {
-    return <Navigate to="/restaurants"/>
+    return <Navigate to="/restaurants"/>;
   }
 
   return (
