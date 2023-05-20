@@ -25,6 +25,7 @@ import javax.validation.Valid;
 @Api(description = "Book")
 @RequestMapping("/api/books")
 @RestController
+@Slf4j
 public class BookController extends ApiController {
 
     @Autowired

@@ -40,41 +40,41 @@ public class BookControllerTests extends ControllerTestCase {
         @MockBean
         UserRepository userRepository;
 
-        // Authorization tests for /api/book/admin/all
+        // Authorization tests for /api/books/admin/all
 
         @Test
         public void logged_out_users_cannot_get_all() throws Exception {
-                mockMvc.perform(get("/api/book/all"))
+                mockMvc.perform(get("/api/books/all"))
                                 .andExpect(status().is(403)); // logged out users can't get all
         }
 
         @WithMockUser(roles = { "USER" })
         @Test
         public void logged_in_users_can_get_all() throws Exception {
-                mockMvc.perform(get("/api/book/all"))
+                mockMvc.perform(get("/api/books/all"))
                                 .andExpect(status().is(200)); // logged
         }
 
         
         @Test
         public void logged_out_users_cannot_get_by_id() throws Exception {
-                mockMvc.perform(get("/api/book?id=1"))
+                mockMvc.perform(get("/api/books?id=1"))
                                 .andExpect(status().is(403)); // logged out users can't get by id
         }
 
-        // Authorization tests for /api/book/post
+        // Authorization tests for /api/books/post
         // (Perhaps should also have these for put and delete)
 
         @Test
         public void logged_out_users_cannot_post() throws Exception {
-                mockMvc.perform(post("/api/book/post"))
+                mockMvc.perform(post("/api/books/post"))
                                 .andExpect(status().is(403));
         }
 
         @WithMockUser(roles = { "USER" })
         @Test
         public void logged_in_regular_users_cannot_post() throws Exception {
-                mockMvc.perform(post("/api/book/post"))
+                mockMvc.perform(post("/api/books/post"))
                                 .andExpect(status().is(403)); // only admins can post
         }
 
@@ -95,7 +95,7 @@ public class BookControllerTests extends ControllerTestCase {
                 when(bookRepository.findById(1L)).thenReturn(Optional.of(greenEggs));
 
                 // act
-                MvcResult response = mockMvc.perform(get("/api/book?id=1"))
+                MvcResult response = mockMvc.perform(get("/api/books?id=1"))
                                 .andExpect(status().isOk()).andReturn();
 
                 // assert
@@ -115,7 +115,7 @@ public class BookControllerTests extends ControllerTestCase {
                 when(bookRepository.findById(-1L)).thenReturn(Optional.empty());
 
                 // act
-                MvcResult response = mockMvc.perform(get("/api/book?id=-1"))
+                MvcResult response = mockMvc.perform(get("/api/books?id=-1"))
                                 .andExpect(status().isNotFound()).andReturn();
 
                 // assert
@@ -150,7 +150,7 @@ public class BookControllerTests extends ControllerTestCase {
                 when(bookRepository.findAll()).thenReturn(expectedBooks);
 
                 // act
-                MvcResult response = mockMvc.perform(get("/api/book/all"))
+                MvcResult response = mockMvc.perform(get("/api/books/all"))
                                 .andExpect(status().isOk()).andReturn();
 
                 // assert
@@ -176,7 +176,7 @@ public class BookControllerTests extends ControllerTestCase {
 
                 // act
                 MvcResult response = mockMvc.perform(
-                                post("/api/book/post?name=GreenEggsAndHam&genre=Poetry&author=DrSeuss")
+                                post("/api/books/post?name=GreenEggsAndHam&genre=Poetry&author=DrSeuss")
                                                 .with(csrf()))
                                 .andExpect(status().isOk()).andReturn();
 
@@ -202,7 +202,7 @@ public class BookControllerTests extends ControllerTestCase {
 
                 // act
                 MvcResult response = mockMvc.perform(
-                                delete("/api/book?id=1")
+                                delete("/api/books?id=1")
                                                 .with(csrf()))
                                 .andExpect(status().isOk()).andReturn();
 
@@ -224,7 +224,7 @@ public class BookControllerTests extends ControllerTestCase {
 
                 // act
                 MvcResult response = mockMvc.perform(
-                                delete("/api/book?id=100")
+                                delete("/api/books?id=100")
                                                 .with(csrf()))
                                 .andExpect(status().isNotFound()).andReturn();
 
@@ -258,7 +258,7 @@ public class BookControllerTests extends ControllerTestCase {
 
                 // act
                 MvcResult response = mockMvc.perform(
-                                put("/api/book?id=25")
+                                put("/api/books?id=25")
                                                 .contentType(MediaType.APPLICATION_JSON)
                                                 .characterEncoding("utf-8")
                                                 .content(requestBody)
@@ -289,7 +289,7 @@ public class BookControllerTests extends ControllerTestCase {
 
                 // act
                 MvcResult response = mockMvc.perform(
-                                put("/api/book?id=25")
+                                put("/api/books?id=25")
                                                 .contentType(MediaType.APPLICATION_JSON)
                                                 .characterEncoding("utf-8")
                                                 .content(requestBody)
