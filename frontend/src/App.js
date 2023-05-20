@@ -21,6 +21,10 @@ import RestaurantEditPage from "main/pages/Restaurants/RestaurantEditPage";
 import RestaurantIndexPage from "main/pages/Restaurants/RestaurantIndexPage";
 import RestaurantDetailsPage from "main/pages/Restaurants/RestaurantDetailsPage";
 
+import BookCreatePage from "main/pages/Books/BookCreatePage";
+import BookEditPage from "main/pages/Books/BookEditPage";
+import BookIndexPage from "main/pages/Books/BookIndexPage";
+import BookDetailsPage from "main/pages/Books/BookDetailsPage";
 
 import { hasRole, useCurrentUser } from "main/utils/currentUser";
 
@@ -71,6 +75,16 @@ function App() {
               <Route exact path="/hotels/edit/:id" element={<HotelEditPage />} />
               <Route exact path="/hotels/details/:id" element={<HotelDetailsPage />} />
               <Route exact path="/hotels/" element={<HotelIndexPage />} />
+            </>
+          )
+        }
+        {
+          hasRole(currentUser, "ROLE_USER") && (
+            <>
+              <Route exact path="/books/create" element={<BookCreatePage />} />
+              <Route exact path="/books/edit/:id" element={<BookEditPage />} />
+              <Route exact path="/books/details/:id" element={<BookDetailsPage />} />
+              <Route exact path="/books/" element={<BookIndexPage />} />
             </>
           )
         }
