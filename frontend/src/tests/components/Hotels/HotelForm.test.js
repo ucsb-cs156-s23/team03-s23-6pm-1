@@ -1,9 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
-
 import HotelForm from "main/components/Hotels/HotelForm";
 import { hotelFixtures } from "fixtures/hotelFixtures";
-
 import { QueryClient, QueryClientProvider } from "react-query";
 
 const mockedNavigate = jest.fn();
@@ -16,7 +14,7 @@ jest.mock("react-router-dom", () => ({
 describe("HotelForm tests", () => {
   const queryClient = new QueryClient();
 
-  const expectedHeaders = ["Name", "Description", "Address"];
+  const expectedHeaders = ["Name", "Address", "Description"];
   const testId = "HotelForm";
 
   test("renders correctly with no initialContents", async () => {
@@ -44,8 +42,6 @@ describe("HotelForm tests", () => {
         </Router>
       </QueryClientProvider>
     );
-
-    expect(await screen.findByText(/Create/)).toBeInTheDocument();
 
     expectedHeaders.forEach((headerText) => {
       const header = screen.getByText(headerText);

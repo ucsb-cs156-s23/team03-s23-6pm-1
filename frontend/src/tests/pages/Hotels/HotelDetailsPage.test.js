@@ -2,43 +2,52 @@ import { render, screen } from "@testing-library/react";
 import HotelDetailsPage from "main/pages/Hotels/HotelDetailsPage";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { MemoryRouter } from "react-router-dom";
-import axios from "axios"
+// for mocking /api/currentUser and /api/systemInfo
 import { apiCurrentUserFixtures } from "fixtures/currentUserFixtures";
 import { systemInfoFixtures } from "fixtures/systemInfoFixtures";
-import AxiosMockAdapter from "axios-mock-adapter"
+import axios from "axios";
+import AxiosMockAdapter from "axios-mock-adapter";
 
 const mockNavigate = jest.fn();
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useParams: () => ({
-    id: 3,
-  }),
-  useNavigate: () => mockNavigate,
-}));
-
-jest.mock("main/utils/hotelUtils", () => {
+jest.mock("react-router-dom", () => {
+  const originalModule = jest.requireActual("react-router-dom");
   return {
     __esModule: true,
-    hotelUtils: {
-      getById: (_id) => {
-        return {
-          hotel: {
-            id: 3,
-            name: "Beverly Hills",
-            address: "1234 Main St",
-            description: "Nice hotel",
-          },
-        };
-      },
+    ...originalModule,
+    useParams: () => ({
+      id: 3,
+      name: "Grand Hotel",
+      description: "fantastic",
+      address: "123 State",
+    }),
+    Navigate: (x) => {
+      mockNavigate(x);
+      return null;
     },
   };
 });
 
 describe("HotelDetailsPage tests", () => {
-  const axiosMock = new AxiosMockAdapter(axios)
-  axiosMock.onGet("/api/currentUser").reply(200, apiCurrentUserFixtures.userOnly)
-  axiosMock.onGet("/api/systemInfo").reply(200, systemInfoFixtures.showingNeither)
-  
+  // mock /api/currentUser and /api/systemInfo
+  const axiosMock = new AxiosMockAdapter(axios);
+
+  beforeEach(() => {
+    axiosMock.reset();
+    axiosMock.resetHistory();
+    axiosMock
+      .onGet("/api/currentUser")
+      .reply(200, apiCurrentUserFixtures.userOnly);
+    axiosMock
+      .onGet("/api/systemInfo")
+      .reply(200, systemInfoFixtures.showingNeither);
+    axiosMock.onGet("/api/hotels", { params: { id: 3 } }).reply(200, {
+      id: 3,
+      name: "Grand Hotel",
+      description: "fantastic",
+      address: "123 State",
+    });
+  });
+
   const queryClient = new QueryClient();
   test("renders without crashing", () => {
     render(
@@ -58,9 +67,9 @@ describe("HotelDetailsPage tests", () => {
         </MemoryRouter>
       </QueryClientProvider>
     );
-    expect(screen.getByText("Beverly Hills")).toBeInTheDocument();
-    expect(screen.getByText("1234 Main St")).toBeInTheDocument();
-    expect(screen.getByText("Nice hotel")).toBeInTheDocument();
+    expect(screen.getByText("Grand Hotel")).toBeInTheDocument();
+    expect(screen.getByText("fantastic")).toBeInTheDocument();
+    expect(screen.getByText("123 State")).toBeInTheDocument();
 
     expect(screen.queryByText("Delete")).not.toBeInTheDocument();
     expect(screen.queryByText("Edit")).not.toBeInTheDocument();
