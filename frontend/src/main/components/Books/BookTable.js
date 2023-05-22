@@ -46,6 +46,7 @@ export default function BookTable({ books, currentUser }) {
     ];
 
     if (hasRole(currentUser, "ROLE_ADMIN")) {
+        columns.push(ButtonColumn("Details", "primary", editCallback, "BookTable"));
         columns.push(ButtonColumn("Edit", "primary", editCallback, "BookTable"));
         columns.push(ButtonColumn("Delete", "danger", deleteCallback, "BookTable"));
     } 
