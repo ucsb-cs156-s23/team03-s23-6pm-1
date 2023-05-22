@@ -3,45 +3,55 @@ import BookDetailsPage from "main/pages/Books/BookDetailsPage";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { MemoryRouter } from "react-router-dom";
 
-import { apiCurrentUserFixtures }  from "fixtures/currentUserFixtures";
+import { apiCurrentUserFixtures } from "fixtures/currentUserFixtures";
 import { systemInfoFixtures } from "fixtures/systemInfoFixtures";
 import axios from "axios";
 import AxiosMockAdapter from "axios-mock-adapter";
 
 const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-    ...jest.requireActual('react-router-dom'),
-    useParams: () => ({
-        id: 3
-    }),
-    useNavigate: () => mockNavigate
-}));
-
-jest.mock('main/utils/bookUtils', () => {
+jest.mock('react-router-dom', () => {
+    const originalModule = jest.requireActual('react-router-dom');
     return {
         __esModule: true,
-        bookUtils: {
-            getById: (_id) => {
-                return {
-                    book: {
-                        id: 3,
-                        name: "The Great Gatsby",
-                        author: "F. Scott Fitzgerald",
-                        genre: "Tragedy"
-                    }
-                }
-            }
-        }
-    }
+        ...originalModule,
+        useParams: () => ({
+            id: 1,
+            name: 'The Hobbit',
+            author: "J. R. R. Tolkien",
+            genre: "High Fantasy"
+        }),
+        Navigate: (x) => { mockNavigate(x); return null; }
+    };
 });
 
 describe("BookDetailsPage tests", () => {
 
-    const axiosMock =new AxiosMockAdapter(axios);
-    axiosMock.onGet("/api/currentUser").reply(200, apiCurrentUserFixtures.userOnly);
-    axiosMock.onGet("/api/systemInfo").reply(200, systemInfoFixtures.showingNeither);
+    const axiosMock = new AxiosMockAdapter(axios);
+    beforeEach(() => {
+        axiosMock.reset();
+        axiosMock.resetHistory();
+        setupUserOnly();
+        axiosMock.onGet("/api/books", { params: { id: 1 } }).reply(200, {
+            id: 1,
+            name: "The Hobbit",
+            author: "J. R. R. Tolkien",
+            genre: "High Fantasy"
+        });
+    });
 
+    const testId = "BookTable";
     const queryClient = new QueryClient();
+
+    const setupUserOnly = () => {
+        axiosMock.onGet("/api/currentUser").reply(200, apiCurrentUserFixtures.userOnly);
+        axiosMock.onGet("/api/systemInfo").reply(200, systemInfoFixtures.showingNeither);
+    };
+
+    const setupAdminUser = () => {
+        axiosMock.onGet("/api/currentUser").reply(200, apiCurrentUserFixtures.adminUser);
+        axiosMock.onGet("/api/systemInfo").reply(200, systemInfoFixtures.showingNeither);
+    };
+
     test("renders without crashing", () => {
         render(
             <QueryClientProvider client={queryClient}>
@@ -60,9 +70,9 @@ describe("BookDetailsPage tests", () => {
                 </MemoryRouter>
             </QueryClientProvider>
         );
-        expect(screen.getByText("The Great Gatsby")).toBeInTheDocument();
-        expect(screen.getByText("F. Scott Fitzgerald")).toBeInTheDocument();
-        expect(screen.getByText("Tragedy")).toBeInTheDocument();
+        expect(screen.getByText("The Hobbit")).toBeInTheDocument();
+        expect(screen.getByText("J. R. R. Tolkien")).toBeInTheDocument();
+        expect(screen.getByText("High Fantasy")).toBeInTheDocument();
 
         expect(screen.queryByText("Delete")).not.toBeInTheDocument();
         expect(screen.queryByText("Edit")).not.toBeInTheDocument();
