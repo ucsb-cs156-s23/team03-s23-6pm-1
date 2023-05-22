@@ -12,14 +12,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 60
 
     steps:
       - uses: szenius/set-timezone@v1.2
         with:
           timezoneLinux: "America/Los_Angeles"
       - uses: actions/checkout@v3.5.2
-        with: 
+        with:
           fetch-depth: 2
 
       - run: npm ci
@@ -34,7 +34,7 @@ jobs:
         with:
           name: stryker-report
           path: frontend/reports/mutation/*
-  
+
       - name: Deploy 🚀
         if: always() # always upload artifacts, even if tests fail
         uses: JamesIves/github-pages-deploy-action@v4
