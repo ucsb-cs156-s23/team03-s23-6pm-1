@@ -1,4 +1,4 @@
-import { render, fireEvent, waitFor, getAllByTestId, findAllByTestId } from "@testing-library/react";
+import { render, fireEvent, waitFor, screen, mockNavigate, getAllByTestId, findAllByTestId } from "@testing-library/react";
 import BookIndexPage from "main/pages/Books/BookIndexPage";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { MemoryRouter } from "react-router-dom";
@@ -6,11 +6,15 @@ import mockConsole from "jest-mock-console";
 import { bookFixtures } from "fixtures/bookFixtures";
 import { apiCurrentUserFixtures } from "fixtures/currentUserFixtures";
 import { systemInfoFixtures } from "fixtures/systemInfoFixtures";
-import AxiosMockAdapter  from "axios-mock-adapter";
+import AxiosMockAdapter from "axios-mock-adapter";
 import axios from "axios";
 
+const mockedNavigate = jest.fn();
 
-
+jest.mock('react-router-dom', () => ({
+    ...jest.requireActual('react-router-dom'),
+    useNavigate: () => mockedNavigate
+}));
 
 const mockToast = jest.fn();
 jest.mock('react-toastify', () => {
@@ -24,7 +28,7 @@ jest.mock('react-toastify', () => {
 
 describe("BookIndexPage tests", () => {
 
-    const axiosMock =new AxiosMockAdapter(axios);
+    const axiosMock = new AxiosMockAdapter(axios);
 
     const testId = "BookTable";
 
@@ -154,18 +158,33 @@ describe("BookIndexPage tests", () => {
 
         await waitFor(() => { expect(getByTestId(`${testId}-cell-row-0-col-id`)).toBeInTheDocument(); });
 
-       expect(getByTestId(`${testId}-cell-row-0-col-id`)).toHaveTextContent("2"); 
+        expect(getByTestId(`${testId}-cell-row-0-col-id`)).toHaveTextContent("2");
 
 
         const deleteButton = getByTestId(`${testId}-cell-row-0-col-Delete-button`);
         expect(deleteButton).toBeInTheDocument();
-       
+
         fireEvent.click(deleteButton);
 
         await waitFor(() => { expect(mockToast).toBeCalledWith("Book with id 1 was deleted") });
 
     });
 
+    test("Create button navigates to create Book page", async () => {
+        const queryClient = new QueryClient();
+        render(
+            <QueryClientProvider client={queryClient}>
+                <MemoryRouter>
+                    <BookIndexPage />
+                </MemoryRouter>
+            </QueryClientProvider>
+        );
+        const createButton = screen.getByText("Create Book");
+        expect(createButton).toBeInTheDocument();
+        expect(createButton).toHaveAttribute("style", "float: right;");
+        expect(createButton).toHaveAttribute("href", "/books/create");
+
+    });
 });
 
 
