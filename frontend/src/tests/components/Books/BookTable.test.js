@@ -18,12 +18,12 @@ describe("UserTable tests", () => {
 
 
   test("renders without crashing for empty table with user not logged in", () => {
-    const currentUser = null;
+    //const currentUser = null;
 
     render(
       <QueryClientProvider client={queryClient}>
         <MemoryRouter>
-          <BookTable books={[]} currentUser={currentUser} />
+          <BookTable books={[]} />
         </MemoryRouter>
       </QueryClientProvider>
 
@@ -116,6 +116,30 @@ describe("UserTable tests", () => {
     fireEvent.click(editButton);
 
     await waitFor(() => expect(mockedNavigate).toHaveBeenCalledWith('/books/edit/2'));
+
+  });
+
+  test("Details button navigates to the details page", async () => {
+
+    const currentUser = currentUserFixtures.adminUser;
+
+    const { getByText, getByTestId } = render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <BookTable books={bookFixtures.threeBooks} currentUser={currentUser} />
+        </MemoryRouter>
+      </QueryClientProvider>
+
+    );
+
+    await waitFor(() => { expect(getByTestId(`BookTable-cell-row-0-col-id`)).toHaveTextContent("2"); });
+
+    const detailsButton = getByTestId(`BookTable-cell-row-0-col-Details-button`);
+    expect(detailsButton).toBeInTheDocument();
+    
+    fireEvent.click(detailsButton);
+
+    await waitFor(() => expect(mockedNavigate).toHaveBeenCalledWith('/books/details/2'));
 
   });
 
