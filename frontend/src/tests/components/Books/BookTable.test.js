@@ -1,9 +1,11 @@
-import { fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, queryByText, render, waitFor } from "@testing-library/react";
 import { bookFixtures } from "fixtures/bookFixtures";
 import BookTable from "main/components/Books/BookTable"
 import { QueryClient, QueryClientProvider } from "react-query";
 import { MemoryRouter } from "react-router-dom";
 import { currentUserFixtures } from "fixtures/currentUserFixtures";
+import axios from "axios";
+import { AxiosMockAdapter } from "axios-mock-adapter";
 
 
 const mockedNavigate = jest.fn();
